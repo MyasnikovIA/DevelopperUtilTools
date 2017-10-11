@@ -1,147 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.2 (Build 651)" ts="2017-10-11 05:36:30">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-11 16:27:16">
 <Class name="Developper.UtilTools.ClassFromBin">
 <Description>
 Класс содержит методы упрощающие процесс разработки програмного продукта</Description>
 <Super>%CSP.Page</Super>
-<TimeChanged>64567,20165.014346</TimeChanged>
+<TimeChanged>64555,58776.655804</TimeChanged>
 <TimeCreated>64429,50260.766133</TimeCreated>
-
-<Method name="OnPage">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-   &html<
-     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspxmlhttp.js"></script>
-     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspbroker.js"></script>
-   >
-   d ..Style()
-   &html<
-      <h2>Загрузка бинарных файлов в Cache` классы</h2>
-      <br>Имя класса
-      <br><input id='PacName' name='PacName' value='User.delete'/>
-      <br>Описание класса<textarea align=left id="Descript" style='width:98%;'></textarea>
-      <br>Исходный файл для конвертации
-      <input type="file" id="files" name="file" multiple/>
-      <br><button onclick="abortRead();">прервать создание</button>
-      <br><button id='StartConvertFiles'>Запуск</button>
-      <div id="progress_bar"><div class="percent">0%</div></div>
-      <output id="list"></output>
-      <pre>
-         <div id="info"></div>
-      </pre>
-   <script   language="javascript">
-  var reader;
-  var progress = document.querySelector('.percent');
-
-  function abortRead() {
-     reader.abort();
-  }
-
-  function errorHandler(evt) {
-    switch(evt.target.error.code) {
-      case evt.target.error.NOT_FOUND_ERR:
-        alert('File Not Found!');
-        break;
-      case evt.target.error.NOT_READABLE_ERR:
-        alert('File is not readable');
-        break;
-      case evt.target.error.ABORT_ERR:
-        break; // noop
-      default:
-        alert('An error occurred reading this file.');
-    };
-  }
-
-  function updateProgress(evt) {
-    // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
-    }
-  }
-  
-  
-  function arrayBufferToBase64(ab){
-
-    var dView = new Uint8Array(ab);   //Get a byte view        
-
-    var arr = Array.prototype.slice.call(dView); //Create a normal array        
-
-    var arr1 = arr.map(function(item){        
-      return String.fromCharCode(item);    //Convert
-    });
-
-    return window.btoa(arr1.join(''));   //Form a string
-
-}
- 
- 
-  function handleFileSelect1(evt) {
-     // var files = evt.target.files; // FileList object
-    var files = document.getElementById('files').files; 
-    var output = [];
-    var CountFile=files.length;
-    document.getElementById('info').innerHTML='';
-
-    for (var i = 0, f; f = files[i]; i++) {
-                   
-          output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-          f.size, ' bytes, last modified: ',
-          f.lastModifiedDate.toLocaleDateString(), '</li>');
-          progress.style.width = '0%';
-          progress.textContent = '0%';
-          var reader = new FileReader();
-          reader.onerror = errorHandler;
-          reader.onprogress = updateProgress;
-          reader.onabort = function(e) {   alert('File read cancelled');   };
-          reader.onloadstart = function(e){  document.getElementById('progress_bar').className = 'loading'; };
-          reader.onload = (function(theFile) {
-              return function(e) {
-                  
-                  progress.style.width = '100%';
-                  progress.textContent = '100%';
-                  setTimeout("document.getElementById('progress_bar').className='';", 2000);
-                   // alert(document.getElementById('PacName').value);
-                   // alert(document.getElementById('Descript').value);
-                   // alert(arrayBufferToBase64(e.target.result));
-                   var PacName=document.getElementById('PacName').value;
-                   var FileName=escape(theFile.name);
-                   var FileNameOne=FileName.replace(/\.\w+/,'');
-                   var Descript=document.getElementById('Descript').value;
-                   Descript = Descript.replace(/(\r\n|\n|\r)/gm,"\r///<br>");
-                   document.getElementById('info').innerHTML+='\r\n';
-                   document.getElementById('info').innerHTML+=#server(..CreateMyClass(FileName,Descript,PacName,arrayBufferToBase64(e.target.result),theFile.size,CountFile))#;
-                   // alert(#server(..CreateMyClass(FileName,Descript,PacName,e.target.result))#);
-                   var span = document.createElement('span');
-                   //  span.innerHTML = ['<img class="thumb" src="', e.target.result,'" title="', escape(theFile.name), '"/>'].join('');
-                   //  span.innerHTML = ['<img class="thumb" src="', PacName+'.'+FileNameOne+'.cls','" title="', escape(theFile.name), '"/>'].join('');
-                   //  document.getElementById('list').insertBefore(span, null);
-
-                };
-          })(f);
-          
-          reader.readAsArrayBuffer(f);
-      //   reader.readAsDataURL(f);
-      //   reader.readAsBinaryString(f);
-      //   reader.readAsArrayBuffer(f);
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
-  //document.getElementById('files').addEventListener('change', handleFileSelect1, false);
-  document.getElementById('StartConvertFiles').addEventListener('click', handleFileSelect1, false);
-  
-</script>
-   >
-   
-   
-   Quit $$$OK
-]]></Implementation>
-</Method>
 
 <Method name="Style">
 <ClassMethod>1</ClassMethod>
@@ -180,31 +44,31 @@
     s Typ=..ContentTypeLocal(FileName)
     s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
     if CountFile=1 {
-        s classname=PacName
+	   s classname=PacName
     }else{
-        s classname=PacName_"."_$e(FileName,1,$l(FileName)-$l(rashirenie)-1)
-     }
+	   s classname=PacName_"."_$e(FileName,1,$l(FileName)-$l(rashirenie)-1)
+	}
     // Удаляем старый класс если он есть
     Do:$zObjClassMethod("%CompiledClass","%ExistsId",classname)=1 $system.OBJ.Delete(classname)    
     s tt=##class(%Dictionary.ClassDefinition).%New(classname)
     s tt.Super="%CSP.Page"
     s tt.Description=""
     if $l("js",rashirenie)'=1{
-        s tt.Description=tt.Description_$c(10)_"///<br>Скрипт(JS):"
-        s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_classname_".cls'&gt;&lt;/script&gt; " 
-        s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_classname_".cls'></script>   -->" 
+	   s tt.Description=tt.Description_$c(10)_"///<br>Скрипт(JS):"
+	   s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_classname_".cls'&gt;&lt;/script&gt; " 
+	   s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_classname_".cls'></script>   -->" 
     }
     if $l("css",rashirenie)'=1{
-         s tt.Description=tt.Description_$c(10)_"///<br>Файл стилей:"
-         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_classname_".cls'  rel='stylesheet' &gt;" 
-         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_classname_".cls'  rel='stylesheet' >    -->" 
+	    s tt.Description=tt.Description_$c(10)_"///<br>Файл стилей:"
+	    s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_classname_".cls'  rel='stylesheet' &gt;" 
+	    s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_classname_".cls'  rel='stylesheet' >    -->" 
     }
     
     if $l("jpeg,jpg,bmp,tiff,tif,png",rashirenie)'=1{
-         s tt.Description=tt.Description_$c(10)_"///<br>Изображение:"
-         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
-         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
-         // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
+	    s tt.Description=tt.Description_$c(10)_"///<br>Изображение:"
+	    s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
+	    s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
+	    // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
     }
     ///    &lt;script src="HTML.js.bootstrap.v337.bootstrap.min.cls"&gt;&lt;/script&gt;
     ///    <!--   <script src='HTML.js.bootstrap.v337.bootstrap.min.cls'/>-->
@@ -255,7 +119,7 @@
     if $isObject(BlobsFile){
        While 'BlobsFile.AtEnd  {
            s ind=ind+1
-           s html=BlobsFile.Read(32000)
+           s html=BlobsFile.Read(15000)
            // s ^debug(ind)=$system.Encryption.Base64Encode(html)
            if siz<1000000 {
                s paramName="Frag"_ind
@@ -269,7 +133,7 @@
                s param=""
                d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode(..#"_paramName_")")
            }else{
-                   s paramName="Frag"_ind
+	              s paramName="Frag"_ind
                   s MethodPoleDestroy=##class(%Dictionary.MethodDefinition).%New(tt.Name_"."_MethodName)
                   s MethodPoleDestroy.Name=paramName
                   s MethodPoleDestroy.ClassMethod=1
@@ -281,7 +145,7 @@
            // d MethodDestroy.Implementation.WriteLine("   w ..#"_paramName_" "_$c(13,10))
        }
     }else {
-        s ind=ind+1
+	   s ind=ind+1
        // s ^debug(ind)=BlobsFile
        // s paramName="Frag"_$job_$replace($h,",","")_$random(100000000000)
        s paramName="Frag"_ind
@@ -399,6 +263,145 @@
                   q:rashirenie="asm" "text/x-asm"
                   q:rashirenie="asp" "text/asp"
      q "application/octet-stream"
+]]></Implementation>
+</Method>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+   &html<
+   
+     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspxmlhttp.js"></script>
+     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspbroker.js"></script>
+     <script src='HTML.Lib.cls' type='text/javascript' ></script>
+     
+   >
+   d ..Style()
+   &html<
+      <h2>Загрузка бинарных файлов в Cache` классы</h2>
+      <br>Имя класса
+      <br><input id='PacName' name='PacName' value='User.delete'/>
+      <br>Описание класса<textarea align=left id="Descript" style='width:98%;'></textarea>
+      <br>Исходный файл для конвертации
+      <input type="file" id="files" name="file" multiple/>
+      <br><button onclick="abortRead();">прервать создание</button>
+      <br><button id='StartConvertFiles'>Запуск</button>
+      <div id="progress_bar"><div class="percent">0%</div></div>
+      <output id="list"></output>
+      <pre>
+         <div id="info"></div>
+      </pre>
+   <script   language="javascript">
+  var reader;
+  var progress = document.querySelector('.percent');
+
+  function abortRead() {
+     reader.abort();
+  }
+
+  function errorHandler(evt) {
+    switch(evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+
+  function updateProgress(evt) {
+    // evt is an ProgressEvent.
+    if (evt.lengthComputable) {
+      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+      // Increase the progress bar length.
+      if (percentLoaded < 100) {
+        progress.style.width = percentLoaded + '%';
+        progress.textContent = percentLoaded + '%';
+      }
+    }
+  }
+  
+  
+  function arrayBufferToBase64(ab){
+
+    var dView = new Uint8Array(ab);   //Get a byte view        
+
+    var arr = Array.prototype.slice.call(dView); //Create a normal array        
+
+    var arr1 = arr.map(function(item){        
+      return String.fromCharCode(item);    //Convert
+    });
+
+    return window.btoa(arr1.join(''));   //Form a string
+
+}
+ 
+ 
+  function handleFileSelect1(evt) {
+	// var files = evt.target.files; // FileList object
+    var files = document.getElementById('files').files; 
+    var output = [];
+    var CountFile=files.length;
+    document.getElementById('info').innerHTML='';
+
+    for (var i = 0, f; f = files[i]; i++) {
+          	    
+          output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+          f.size, ' bytes, last modified: ',
+          f.lastModifiedDate.toLocaleDateString(), '</li>');
+          progress.style.width = '0%';
+          progress.textContent = '0%';
+          var reader = new FileReader();
+          reader.onerror = errorHandler;
+          reader.onprogress = updateProgress;
+          reader.onabort = function(e) {   alert('File read cancelled');   };
+          reader.onloadstart = function(e){  document.getElementById('progress_bar').className = 'loading'; };
+          reader.onload = (function(theFile) {
+              return function(e) {
+                  
+                  progress.style.width = '100%';
+                  progress.textContent = '100%';
+                  setTimeout("document.getElementById('progress_bar').className='';", 2000);
+                   // alert(document.getElementById('PacName').value);
+                   // alert(document.getElementById('Descript').value);
+                   // alert(arrayBufferToBase64(e.target.result));
+                   var PacName=document.getElementById('PacName').value;
+                   var FileName=escape(theFile.name);
+                   var FileNameOne=FileName.replace(/\.\w+/,'');
+                   var Descript=document.getElementById('Descript').value;
+                   Descript = Descript.replace(/(\r\n|\n|\r)/gm,"\r///<br>");
+                   document.getElementById('info').innerHTML+='\r\n';
+                   document.getElementById('info').innerHTML+=#server(..CreateMyClass(FileName,Descript,PacName,arrayBufferToBase64(e.target.result),theFile.size,CountFile))#;
+                   // alert(#server(..CreateMyClass(FileName,Descript,PacName,e.target.result))#);
+                   var span = document.createElement('span');
+                   //  span.innerHTML = ['<img class="thumb" src="', e.target.result,'" title="', escape(theFile.name), '"/>'].join('');
+                   //  span.innerHTML = ['<img class="thumb" src="', PacName+'.'+FileNameOne+'.cls','" title="', escape(theFile.name), '"/>'].join('');
+                   //  document.getElementById('list').insertBefore(span, null);
+
+                };
+          })(f);
+          
+          reader.readAsArrayBuffer(f);
+      //   reader.readAsDataURL(f);
+      //   reader.readAsBinaryString(f);
+      //   reader.readAsArrayBuffer(f);
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+  //document.getElementById('files').addEventListener('change', handleFileSelect1, false);
+  document.getElementById('StartConvertFiles').addEventListener('click', handleFileSelect1, false);
+  
+</script>
+   >
+   
+   
+   Quit $$$OK
 ]]></Implementation>
 </Method>
 </Class>

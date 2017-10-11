@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.2 (Build 651)" ts="2017-10-11 05:36:38">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-11 16:27:19">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64567,20107.655123</TimeChanged>
+<TimeChanged>64567,59149.01811</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -14,10 +14,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="HTML"
-     s:PathApp="" PathApp="C:\AppServ\BootstrapMultiSelect\"
+    s:PacName="" PacName="Games.PinPong"
+     s:PathApp="" PathApp="C:\AppServ\PinPong3D\"
     s Dir=$zse(PathApp_"*")
-    s gl="^deb2"
+    s gl="^deb3"
     k @gl
     d ..GetDir2(Dir,PathApp,PacName,gl)
     d ..CreateClass(gl,isBinClass)
@@ -93,19 +93,19 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
         s tt.Description=""
       if $l("js",rashirenie)'=1{
         s tt.Description=tt.Description_$c(10)_"///<br>Скрипт(JS):"
-        s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_classname_".cls'&gt;&lt;/script&gt; " 
-        s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_classname_".cls'></script>   -->" 
+        s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_ClassName_".cls'&gt;&lt;/script&gt; " 
+        s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_ClassName_".cls'></script>   -->" 
     }
     if $l("css",rashirenie)'=1{
          s tt.Description=tt.Description_$c(10)_"///<br>Файл стилей:"
-         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_classname_".cls'  rel='stylesheet' &gt;" 
-         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_classname_".cls'  rel='stylesheet' >    -->" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_ClassName_".cls'  rel='stylesheet' &gt;" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_ClassName_".cls'  rel='stylesheet' >    -->" 
     }
     
     if $l("jpeg,jpg,bmp,tiff,tif,png",rashirenie)'=1{
          s tt.Description=tt.Description_$c(10)_"///<br>Изображение:"
-         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
-         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_ClassName_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_ClassName_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
          // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
     }
   
