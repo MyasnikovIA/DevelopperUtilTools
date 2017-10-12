@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-11 16:27:19">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-12 09:30:18">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64567,59149.01811</TimeChanged>
+<TimeChanged>64568,34193.052949</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
 <Description>
+Загрузка файлолв из  паки в классы
 do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="Games.PinPong"
-     s:PathApp="" PathApp="C:\AppServ\PinPong3D\"
+    s:PacName="" PacName="Demo.WebGisJKH"
+     s:PathApp="" PathApp="C:\Users\MyasnikovIA\Desktop\NSI-v2\"
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
@@ -27,6 +28,13 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
     w "OK"
     q
 ]]></Implementation>
+</Method>
+
+<Method name="ExportDir">
+<Description>
+Выгрузка классов в папку</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>PacName="",DirName=""</FormalSpec>
 </Method>
 
 <Method name="GetDir2">
@@ -141,6 +149,25 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
       d param.%Save()
       d tt.Parameters.Insert(param)
       
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".SrcNamee")
+      s param.Name="SrcName"    
+      s param.Default=JsName
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".DstName")
+      s param.Name="DstName"    
+      s param.Default=CacheName
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+     
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".Rashirenie")
+      s param.Name="Rashirenie"    
+      s param.Default=rashirenie
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+      
+      
       s MethodName="OnPage"
       s MethodDestroy=##class(%Dictionary.MethodDefinition).%New(ClassName_"."_MethodName)
       s MethodDestroy.ReturnType="%Library.Status" 
@@ -160,6 +187,12 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
 
       if isBinDo=1
       { 
+            s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
+            s param.Name="isBinFile"    
+            s param.Default=1
+            d param.%Save()
+            d tt.Parameters.Insert(param)
+
           f  {
              q:file.AtEnd 
              s ind=ind+1
@@ -189,6 +222,12 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
                */
             }
       }else{
+           s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
+           s param.Name="isBinFile"    
+           s param.Default=0
+           d param.%Save()
+           d tt.Parameters.Insert(param)
+
            
            s paramName="XDataContet"
            s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
@@ -200,6 +239,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
            }else{
               d param1.Data.Write("<data>")
            }
+           
+           s isAddHTMLCacheLib=0
+           if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+           if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
            f  {
               q:file.AtEnd 
               s ind=ind+1 
@@ -213,6 +256,16 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
                   s CacheName2=$lg(@gl@(ClassName2),3)
                   if $l(html,JsName2)>1{
                       s html=$REPLACE(html ,JsName2,CacheName2)
+                  }
+                  
+                  /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
+                  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
+	                  if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
+	                    s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
+	                    s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  }
+	                  s isAddHTMLCacheLib=1
                   }
                }
                // s html=$ZCVT(html,"o","XML")
@@ -231,18 +284,20 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
            d tt.XDatas.Insert(param1)
            w tt.%Save(),!
            
-           d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
+            d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
             d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
-            d MethodDestroy.Implementation.WriteLine("   s ind=""""  f {  s ind=$o(@gl@(ind))  q:ind=""""  continue:ind=1  q:ind=@gl  w @gl@(ind)_$c(13,10)}")
+            d MethodDestroy.Implementation.WriteLine("   s ind=""""  f {  s ind=$o(@gl@(ind))  q:ind=""""  continue:ind=1  q:ind=@gl      d ..ExecFrag(@gl@(ind),""/*("","")*/"")     w $c(13,10)  }")
       }    
+      
       d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
       s MethodDestroy.Internal=0
       d MethodDestroy.%Save()
       d tt.Methods.Insert(MethodDestroy)
-     
       w tt.%Save(),!
+      ; копируем методы
+      ; d ..CopyMethod(##this,"ContentTypeLocal",tt,"ContentType")
+      d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
       Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
-      
    }
 ]]></Implementation>
 </Method>
@@ -340,6 +395,48 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
                   q:rashirenie="asm" "text/x-asm"
                   q:rashirenie="asp" "text/asp"
      q "application/octet-stream"
+]]></Implementation>
+</Method>
+
+<Method name="CopyMethod">
+<Description>
+Метод копирования методов </Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ClassNameOld="",OldNameMethod="",ClassNameNew="",NewNameMethod=""</FormalSpec>
+<Implementation><![CDATA[
+     if '$isobject(ClassNameNew){
+       s ttNew=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameNew)
+     }else{
+	   s ttNew=ClassNameNew
+     }
+     if '$isobject(ClassNameOld){
+       s ttOld=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameOld)
+     }else{
+	   s ttOld=ClassNameOld
+     }
+     ; Удалчем классметод в целевом классе
+     for i=1:1:ttNew.Methods.Count() d
+     .  q:ttNew.Methods.GetAt(i).Name'=ClassNameNew
+     .  d ttNew.Methods.GetAt(i).%Delete(ttNew.Methods.GetAt(i).%Oid())
+     .  d ttNew.Methods.RemoveAt(i)
+     .  d ttNew.%Save()
+     ; Копируем метод
+     for i=1:1:ttOld.Methods.Count() d
+     .   q:ttOld.Methods.GetAt(i).Name'=OldNameMethod
+     .   s obj=ttOld.Methods.GetAt(i).%ConstructClone()
+     .   d ttNew.Methods.Insert(obj) 
+     .   w ttNew.%Save()
+
+     q
+]]></Implementation>
+</Method>
+
+<Method name="ExecFrag">
+<Description>
+Метод разбики исходного текста на Cache` код и HTML текст</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>SrcCode="",Beg="",End=""</FormalSpec>
+<Implementation><![CDATA[     q:SrcCode=""   q:Beg=""    q:End=""    for ind=1:1:$l(SrcCode,End){  s tmp=$p(SrcCode,End,ind)   s Html=$p(tmp,Beg,1)     s Code=$p(tmp,Beg,2)   w Html   TRY {     x Code    } CATCH ErrorHandle {    zw ErrorHandle  }    }
 ]]></Implementation>
 </Method>
 </Class>
