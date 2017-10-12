@@ -1,90 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-11 16:27:16">
-<Class name="Developper.UtilTools.ClassFromBin">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-12 10:45:49">
+<Class name="Developper.UtilTools.ClassFromDir">
 <Description>
-Класс содержит методы упрощающие процесс разработки програмного продукта</Description>
-<Super>%CSP.Page</Super>
-<TimeChanged>64555,58776.655804</TimeChanged>
-<TimeCreated>64429,50260.766133</TimeCreated>
+Создание классов из директории (Кодировка текстовых фалов UTF8)
+do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
+<Super>%RegisteredObject</Super>
+<TimeChanged>64568,38724.919234</TimeChanged>
+<TimeCreated>64566,39625.768074</TimeCreated>
 
-<Method name="Style">
+<Method name="run">
+<Description>
+Загрузка файлолв из  паки в классы
+do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
 <ClassMethod>1</ClassMethod>
+<FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-  &html<
-   <style>
-  #progress_bar {
-    margin: 10px 0;
-    padding: 3px;
-    border: 1px solid #000;
-    font-size: 14px;
-    clear: both;
-    opacity: 0;
-    -moz-transition: opacity 1s linear;
-    -o-transition: opacity 1s linear;
-    -webkit-transition: opacity 1s linear;
-  }
-  #progress_bar.loading {
-    opacity: 1.0;
-  }
-  #progress_bar .percent {
-    background-color: #99ccff;
-    height: auto;
-    width: 0;
-  }
-</style>
- >
+    s:PacName="" PacName="Demo.ModalWindowCSS"
+     s:PathApp="" PathApp="C:\AppServ\www\css3_modalwin\"
+    s Dir=$zse(PathApp_"*")
+    s gl="^deb3"
+    k @gl
+    d ..GetDir2(Dir,PathApp,PacName,gl)
+    d ..CreateClass(gl,isBinClass)
+    zw @gl
+    
+    k @gl
+    w "OK"
+    q
 ]]></Implementation>
 </Method>
 
-<Method name="CreateMyClass">
+<Method name="ExportDir">
+<Description>
+Выгрузка классов в папку</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>FileName,Descript="",PacName,BlobsFile,siz,CountFile</FormalSpec>
-<ReturnType>%String</ReturnType>
+<FormalSpec>PacName="",DirName=""</FormalSpec>
+</Method>
+
+<Method name="GetDir2">
+<Description>
+Метод создает длобал сосписком файлов в каталоге ( и подкаталогах)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Dir,PathApp,PacName,gl</FormalSpec>
 <Implementation><![CDATA[
-    s Typ=..ContentTypeLocal(FileName)
-    s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
-    if CountFile=1 {
-	   s classname=PacName
-    }else{
-	   s classname=PacName_"."_$e(FileName,1,$l(FileName)-$l(rashirenie)-1)
-	}
-    // Удаляем старый класс если он есть
-    Do:$zObjClassMethod("%CompiledClass","%ExistsId",classname)=1 $system.OBJ.Delete(classname)    
-    s tt=##class(%Dictionary.ClassDefinition).%New(classname)
-    s tt.Super="%CSP.Page"
-    s tt.Description=""
-    if $l("js",rashirenie)'=1{
-	   s tt.Description=tt.Description_$c(10)_"///<br>Скрипт(JS):"
-	   s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_classname_".cls'&gt;&lt;/script&gt; " 
-	   s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_classname_".cls'></script>   -->" 
+ 
+ s filter=""
+ s rs = ##class(%Library.ResultSet).%New("%Library.File:FileSet")
+ s sc = rs.Execute(Dir,filter,"Name")
+ k files
+ while rs.Next()
+ {
+     s name = rs.Get("Name")
+     if (rs.Get("Type") = "D")
+     {
+        d ..GetDir2(name,PathApp,PacName,gl)
+     }else{
+        ; w !,name  
+        s ClasName=$REPLACE(name,PathApp,"")
+        s ClasName=$REPLACE( ClasName," ","")
+        continue:ClasName=""
+        s ClasName=$REPLACE(ClasName,"-","")
+        s ClasName=$REPLACE(ClasName,"_","")
+        if $l(name,".")>1 {
+          s rashirenie=$p(name,".",$l(name,"."))
+          s ClasName=$e(ClasName,1,$l(ClasName)-$l(rashirenie)-1)
+        }
+        s ClasName=$REPLACE(ClasName,".","")
+        s url=$Replace(name,PathApp,"")
+        s url=$Replace(url,"\","/")
+        
+        s ClasName=$Replace(ClasName,PathApp,"")
+        s ClasName=$Replace(ClasName,"\",".")
+        s ClasName=PacName_"."_ClasName
+        s ClasNameDst=ClasName_".cls"
+        s @gl@(ClasName)=$lb(name,url,ClasNameDst)
+     }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="CreateClass">
+<Description>
+создание классов из списока фалов помещенных ранее в глобалы</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>gl,isBinClass=0</FormalSpec>
+<Implementation><![CDATA[
+      s ClassName=""
+      for  {
+         s ClassName=$o(@gl@(ClassName))
+         q:ClassName=""
+         s FileName=$lg(@gl@(ClassName),1)
+         s JsName=$lg(@gl@(ClassName),2)
+         s CacheName=$lg(@gl@(ClassName),3)
+        s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
+        s Typ=..ContentTypeLocal(FileName)
+        w !,ClassName,!
+        Do:$zObjClassMethod("%CompiledClass","%ExistsId",ClassName)=1 $system.OBJ.Delete(ClassName) 
+        s tt=##class(%Dictionary.ClassDefinition).%New(ClassName)
+        s tt.Super="%CSP.Page"
+        s tt.Description=""
+      if $l("js",rashirenie)'=1{
+        s tt.Description=tt.Description_$c(10)_"///<br>Скрипт(JS):"
+        s tt.Description=tt.Description_$c(10)_"///<br> &lt;script src='"_ClassName_".cls'&gt;&lt;/script&gt; " 
+        s tt.Description=tt.Description_$c(10)_"///<br> <!--  <script src='"_ClassName_".cls'></script>   -->" 
     }
     if $l("css",rashirenie)'=1{
-	    s tt.Description=tt.Description_$c(10)_"///<br>Файл стилей:"
-	    s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_classname_".cls'  rel='stylesheet' &gt;" 
-	    s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_classname_".cls'  rel='stylesheet' >    -->" 
+         s tt.Description=tt.Description_$c(10)_"///<br>Файл стилей:"
+         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;link href='"_ClassName_".cls'  rel='stylesheet' &gt;" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <link  href='"_ClassName_".cls'  rel='stylesheet' >    -->" 
     }
     
     if $l("jpeg,jpg,bmp,tiff,tif,png",rashirenie)'=1{
-	    s tt.Description=tt.Description_$c(10)_"///<br>Изображение:"
-	    s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
-	    s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_classname_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
-	    // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
+         s tt.Description=tt.Description_$c(10)_"///<br>Изображение:"
+         s tt.Description=tt.Description_$c(10)_"///<br>  &lt;img src='"_ClassName_".cls'  alt='Нет фото'  width=320 height=240 &gt;" 
+         s tt.Description=tt.Description_$c(10)_"///<br>  <!--  <img  src='"_ClassName_".cls'  alt='Нет фото'  width=320 height=240 >    -->" 
+         // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
     }
-    ///    &lt;script src="HTML.js.bootstrap.v337.bootstrap.min.cls"&gt;&lt;/script&gt;
-    ///    <!--   <script src='HTML.js.bootstrap.v337.bootstrap.min.cls'/>-->
-    s tt.Description=tt.Description_$c(10)_"///"_Descript
-    s fl=tt.%Save()
+  
+      
     s MethodNameHead="OnPreHTTP"
-    s MethodHead=##class(%Dictionary.MethodDefinition).%New(classname_"."_MethodNameHead)
+    s MethodHead=##class(%Dictionary.MethodDefinition).%New(ClassName_"."_MethodNameHead)
     d MethodHead.Implementation.WriteLine("    Do %response.SetHeader(""Content-Type"","""_Typ_""") ")
     if Typ="application/octet-stream" {
         d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Disposition: attachment; filename="","""_FileName_""") ")
-        d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Length"","""_siz_""") ")
+       ; d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Length"","""_siz_""") ")
     }else{
         d MethodHead.Implementation.WriteLine("    if $d(%request.Data(""download"",1))") 
         d MethodHead.Implementation.WriteLine("    {")
         d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Disposition: attachment; filename="","""_FileName_""") ")
-        d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Length"","""_siz_""") ")
+        ; d MethodHead.Implementation.WriteLine("       Do %response.SetHeader(""Content-Length"","""_siz_""") ")
         d MethodHead.Implementation.WriteLine("    }")
     }
     d MethodHead.Implementation.WriteLine("    q 1  ")
@@ -97,31 +141,65 @@
     d MethodHead.%Save()
     d tt.Methods.Insert(MethodHead)
     s fl=tt.%Save()
-    s MethodName="OnPage"
-    s MethodDestroy=##class(%Dictionary.MethodDefinition).%New(classname_"."_MethodName)
-    s MethodDestroy.ReturnType="%Library.Status" 
-    s MethodDestroy.Description=$zd($h,4)_"  "_$zt($p($h,",",2))
-    ; s MethodDestroy.FormalSpec="head" ; входные параметры
-    s MethodDestroy.CodeMode="code"
-    s MethodDestroy.Name=MethodName
-    s MethodDestroy.Language="cache"
-    s MethodDestroy.ClassMethod=1
-   
-    // имя  источника файла     
-    s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".FileName")
-    s param.Name="FileName"    
-    s param.Default=FileName
-    d param.%Save()
-    d tt.Parameters.Insert(param)
-    d tt.%Save()
-    
-    s ind=0
-    if $isObject(BlobsFile){
-       While 'BlobsFile.AtEnd  {
-           s ind=ind+1
-           s html=BlobsFile.Read(15000)
-           // s ^debug(ind)=$system.Encryption.Base64Encode(html)
-           if siz<1000000 {
+
+      // имя  источника файла     
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".FileName")
+      s param.Name="FileName"    
+      s param.Default=FileName
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+      
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".SrcNamee")
+      s param.Name="SrcName"    
+      s param.Default=JsName
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".DstName")
+      s param.Name="DstName"    
+      s param.Default=CacheName
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+     
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".Rashirenie")
+      s param.Name="Rashirenie"    
+      s param.Default=rashirenie
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+      
+      
+      s MethodName="OnPage"
+      s MethodDestroy=##class(%Dictionary.MethodDefinition).%New(ClassName_"."_MethodName)
+      s MethodDestroy.ReturnType="%Library.Status" 
+      s MethodDestroy.Description=$zd($h,4)_"  "_$zt($p($h,",",2))
+      ; s MethodDestroy.FormalSpec="head" ; входные параметры
+      s MethodDestroy.CodeMode="code"
+      s MethodDestroy.Name=MethodName
+      s MethodDestroy.Language="cache"
+      s MethodDestroy.ClassMethod=1
+      s file=##class(%FileCharacterStream).%New()
+      s file.Filename=FileName
+      s ListRas=".html,.htm,.js,.css,.txt,"
+      s ind=0
+      s isBinDo=0
+      s:$l(ListRas,rashirenie)=1 isBinDo=1
+      s:isBinClass=1 isBinDo=1
+
+      if isBinDo=1
+      { 
+            s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
+            s param.Name="isBinFile"    
+            s param.Default=1
+            d param.%Save()
+            d tt.Parameters.Insert(param)
+
+          f  {
+             q:file.AtEnd 
+             s ind=ind+1
+        
+             s html=$system.Encryption.Base64Encode(file.Read(100))
+             ; s html=$system.Encryption.Base64Encode(file.ReadLine())
+             ; d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode("""_html_""")    ")
                s paramName="Frag"_ind
                s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_"."_paramName)
                s param.Name=paramName    
@@ -132,41 +210,113 @@
                d tt.%Save()
                s param=""
                d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode(..#"_paramName_")")
+               /*       
+                 s paramName="Frag"_ind
+                 s MethodPoleDestroy=##class(%Dictionary.MethodDefinition).%New(tt.Name_"."_MethodName)
+                 s MethodPoleDestroy.Name=paramName
+                 s MethodPoleDestroy.ClassMethod=1
+                 d MethodPoleDestroy.Implementation.WriteLine("  w $system.Encryption.Base64Decode("""_html_""")   q ")
+                 d tt.Methods.Insert(MethodPoleDestroy)
+                 s fl=tt.%Save()
+                 d MethodDestroy.Implementation.WriteLine("   d .."_paramName_"()")
+               */
+            }
+      }else{
+           s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
+           s param.Name="isBinFile"    
+           s param.Default=0
+           d param.%Save()
+           d tt.Parameters.Insert(param)
+
+           
+           s paramName="XDataContet"
+           s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
+           s param1.Name=paramName
+           if rashirenie="css"{
+              d param1.Data.Write("<style type='text/css'>")
+           }elseif rashirenie="js"{
+              d param1.Data.Write("<script type='application/x-javascript'>")
            }else{
-	              s paramName="Frag"_ind
-                  s MethodPoleDestroy=##class(%Dictionary.MethodDefinition).%New(tt.Name_"."_MethodName)
-                  s MethodPoleDestroy.Name=paramName
-                  s MethodPoleDestroy.ClassMethod=1
-                  d MethodPoleDestroy.Implementation.WriteLine("  w $system.Encryption.Base64Decode("""_html_""")   q ")
-                  d tt.Methods.Insert(MethodPoleDestroy)
-                  s fl=tt.%Save()
-                  d MethodDestroy.Implementation.WriteLine("   d .."_paramName_"()")
+              d param1.Data.Write("<data>")
            }
-           // d MethodDestroy.Implementation.WriteLine("   w ..#"_paramName_" "_$c(13,10))
-       }
-    }else {
-	   s ind=ind+1
-       // s ^debug(ind)=BlobsFile
-       // s paramName="Frag"_$job_$replace($h,",","")_$random(100000000000)
-       s paramName="Frag"_ind
-       s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_"."_paramName)
-       s param.Name=paramName    
-       // s val=$system.Encryption.Base64Encode(BlobsFile)
-       s val=BlobsFile
-       s param.Default=val
-       d param.%Save()
-       d tt.Parameters.Insert(param)
-       d tt.%Save()
-       s param=""
-       d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode(..#"_paramName_")")
-    }
-    d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
-    s MethodDestroy.Internal=0
-    d MethodDestroy.%Save()
-    d tt.Methods.Insert(MethodDestroy)
-    s fl=tt.%Save()
-    Do $system.OBJ.Compile(classname,"cuk /checkuptodate=expandedonly")
-    q "OK"
+           
+           s isAddHTMLCacheLib=0
+           if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+           if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+           f  {
+              q:file.AtEnd 
+              s ind=ind+1 
+              s html=file.ReadLine()
+              s html=$zcvt(html,"I","UTF8")
+              s html=$replace(html,"<br>","<br />")
+              if $l(html,"<link ")>1 {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              if $l(html,"<meta ")>1 {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              if $l(html,"<script ")>1 {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              s html=$replace(html,"<br>","<br />")
+              s ClassName2=""
+              for  {
+                  s ClassName2=$o(@gl@(ClassName2))
+                  q:ClassName2=""
+                  s FileName2=$lg(@gl@(ClassName2),1)
+                  s JsName2=$lg(@gl@(ClassName2),2)
+                  s CacheName2=$lg(@gl@(ClassName2),3)
+                  if $l(html,JsName2)>1{
+                      s html=$REPLACE(html ,JsName2,CacheName2)
+                  }
+                  
+                  /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
+                  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
+	                  if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
+	                    s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
+	                    s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  }
+	                  s isAddHTMLCacheLib=1
+                  }
+               }
+               // s html=$ZCVT(html,"o","XML")
+               // s html=$REPLACE(html,"&","&amp;")
+               s html=$c(10)_html
+               d param1.Data.Write(html)
+           }
+          if rashirenie="css"{
+              d param1.Data.Write($c(10)_"</style>")
+           }elseif rashirenie="js"{
+              d param1.Data.Write($c(10)_"</script>")
+           }else{
+              d param1.Data.Write($c(10)_"</data>")
+           }
+           d param1.%Save()
+           d tt.XDatas.Insert(param1)
+           w tt.%Save(),!
+           
+            d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
+            d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
+            d MethodDestroy.Implementation.WriteLine("   s ind=""""  f {  s ind=$o(@gl@(ind))  q:ind=""""  continue:ind=1  q:ind=@gl      d ..ExecFrag(@gl@(ind),""/*("","")*/"")     w $c(13,10)  }")
+      }    
+      
+      d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
+      s MethodDestroy.Internal=0
+      d MethodDestroy.%Save()
+      d tt.Methods.Insert(MethodDestroy)
+      w tt.%Save(),!
+      ; копируем методы
+      ; d ..CopyMethod(##this,"ContentTypeLocal",tt,"ContentType")
+      d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
+      Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
+   }
 ]]></Implementation>
 </Method>
 
@@ -266,142 +416,45 @@
 ]]></Implementation>
 </Method>
 
-<Method name="OnPage">
+<Method name="CopyMethod">
+<Description>
+Метод копирования методов </Description>
 <ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
+<FormalSpec>ClassNameOld="",OldNameMethod="",ClassNameNew="",NewNameMethod=""</FormalSpec>
 <Implementation><![CDATA[
-   &html<
-   
-     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspxmlhttp.js"></script>
-     <script language="JavaScript" type="text/javascript" src="/csp/broker/cspbroker.js"></script>
-     <script src='HTML.Lib.cls' type='text/javascript' ></script>
-     
-   >
-   d ..Style()
-   &html<
-      <h2>Загрузка бинарных файлов в Cache` классы</h2>
-      <br>Имя класса
-      <br><input id='PacName' name='PacName' value='User.delete'/>
-      <br>Описание класса<textarea align=left id="Descript" style='width:98%;'></textarea>
-      <br>Исходный файл для конвертации
-      <input type="file" id="files" name="file" multiple/>
-      <br><button onclick="abortRead();">прервать создание</button>
-      <br><button id='StartConvertFiles'>Запуск</button>
-      <div id="progress_bar"><div class="percent">0%</div></div>
-      <output id="list"></output>
-      <pre>
-         <div id="info"></div>
-      </pre>
-   <script   language="javascript">
-  var reader;
-  var progress = document.querySelector('.percent');
+     if '$isobject(ClassNameNew){
+       s ttNew=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameNew)
+     }else{
+	   s ttNew=ClassNameNew
+     }
+     if '$isobject(ClassNameOld){
+       s ttOld=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameOld)
+     }else{
+	   s ttOld=ClassNameOld
+     }
+     ; Удалчем классметод в целевом классе
+     for i=1:1:ttNew.Methods.Count() d
+     .  q:ttNew.Methods.GetAt(i).Name'=ClassNameNew
+     .  d ttNew.Methods.GetAt(i).%Delete(ttNew.Methods.GetAt(i).%Oid())
+     .  d ttNew.Methods.RemoveAt(i)
+     .  d ttNew.%Save()
+     ; Копируем метод
+     for i=1:1:ttOld.Methods.Count() d
+     .   q:ttOld.Methods.GetAt(i).Name'=OldNameMethod
+     .   s obj=ttOld.Methods.GetAt(i).%ConstructClone()
+     .   d ttNew.Methods.Insert(obj) 
+     .   w ttNew.%Save()
 
-  function abortRead() {
-     reader.abort();
-  }
+     q
+]]></Implementation>
+</Method>
 
-  function errorHandler(evt) {
-    switch(evt.target.error.code) {
-      case evt.target.error.NOT_FOUND_ERR:
-        alert('File Not Found!');
-        break;
-      case evt.target.error.NOT_READABLE_ERR:
-        alert('File is not readable');
-        break;
-      case evt.target.error.ABORT_ERR:
-        break; // noop
-      default:
-        alert('An error occurred reading this file.');
-    };
-  }
-
-  function updateProgress(evt) {
-    // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
-    }
-  }
-  
-  
-  function arrayBufferToBase64(ab){
-
-    var dView = new Uint8Array(ab);   //Get a byte view        
-
-    var arr = Array.prototype.slice.call(dView); //Create a normal array        
-
-    var arr1 = arr.map(function(item){        
-      return String.fromCharCode(item);    //Convert
-    });
-
-    return window.btoa(arr1.join(''));   //Form a string
-
-}
- 
- 
-  function handleFileSelect1(evt) {
-	// var files = evt.target.files; // FileList object
-    var files = document.getElementById('files').files; 
-    var output = [];
-    var CountFile=files.length;
-    document.getElementById('info').innerHTML='';
-
-    for (var i = 0, f; f = files[i]; i++) {
-          	    
-          output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-          f.size, ' bytes, last modified: ',
-          f.lastModifiedDate.toLocaleDateString(), '</li>');
-          progress.style.width = '0%';
-          progress.textContent = '0%';
-          var reader = new FileReader();
-          reader.onerror = errorHandler;
-          reader.onprogress = updateProgress;
-          reader.onabort = function(e) {   alert('File read cancelled');   };
-          reader.onloadstart = function(e){  document.getElementById('progress_bar').className = 'loading'; };
-          reader.onload = (function(theFile) {
-              return function(e) {
-                  
-                  progress.style.width = '100%';
-                  progress.textContent = '100%';
-                  setTimeout("document.getElementById('progress_bar').className='';", 2000);
-                   // alert(document.getElementById('PacName').value);
-                   // alert(document.getElementById('Descript').value);
-                   // alert(arrayBufferToBase64(e.target.result));
-                   var PacName=document.getElementById('PacName').value;
-                   var FileName=escape(theFile.name);
-                   var FileNameOne=FileName.replace(/\.\w+/,'');
-                   var Descript=document.getElementById('Descript').value;
-                   Descript = Descript.replace(/(\r\n|\n|\r)/gm,"\r///<br>");
-                   document.getElementById('info').innerHTML+='\r\n';
-                   document.getElementById('info').innerHTML+=#server(..CreateMyClass(FileName,Descript,PacName,arrayBufferToBase64(e.target.result),theFile.size,CountFile))#;
-                   // alert(#server(..CreateMyClass(FileName,Descript,PacName,e.target.result))#);
-                   var span = document.createElement('span');
-                   //  span.innerHTML = ['<img class="thumb" src="', e.target.result,'" title="', escape(theFile.name), '"/>'].join('');
-                   //  span.innerHTML = ['<img class="thumb" src="', PacName+'.'+FileNameOne+'.cls','" title="', escape(theFile.name), '"/>'].join('');
-                   //  document.getElementById('list').insertBefore(span, null);
-
-                };
-          })(f);
-          
-          reader.readAsArrayBuffer(f);
-      //   reader.readAsDataURL(f);
-      //   reader.readAsBinaryString(f);
-      //   reader.readAsArrayBuffer(f);
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
-  //document.getElementById('files').addEventListener('change', handleFileSelect1, false);
-  document.getElementById('StartConvertFiles').addEventListener('click', handleFileSelect1, false);
-  
-</script>
-   >
-   
-   
-   Quit $$$OK
+<Method name="ExecFrag">
+<Description>
+Метод разбики исходного текста на Cache` код и HTML текст</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>SrcCode="",Beg="",End=""</FormalSpec>
+<Implementation><![CDATA[     q:SrcCode=""   q:Beg=""    q:End=""    for ind=1:1:$l(SrcCode,End){  s tmp=$p(SrcCode,End,ind)   s Html=$p(tmp,Beg,1)     s Code=$p(tmp,Beg,2)   w Html   TRY {     x Code    } CATCH ErrorHandle {    zw ErrorHandle  }    }
 ]]></Implementation>
 </Method>
 </Class>
