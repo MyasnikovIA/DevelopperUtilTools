@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-12 09:30:18">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-13 15:55:19">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
-Создание классов из директории
+Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64568,34193.052949</TimeChanged>
+<TimeChanged>64569,56943.189728</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
 <Description>
 Загрузка файлолв из  паки в классы
-do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
+do ##class(Developper.UtilTools.ClassFromDir).run()
+do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="Demo.WebGisJKH"
-     s:PathApp="" PathApp="C:\Users\MyasnikovIA\Desktop\NSI-v2\"
+    s:PacName="" PacName="Demo.WebGL"
+     s:PathApp="" PathApp="D:\Delete\basicwebgl-master\basicwebgl-master\WebGL\samples\"
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
     d ..GetDir2(Dir,PathApp,PacName,gl)
     d ..CreateClass(gl,isBinClass)
     zw @gl
-    
     k @gl
     w "OK"
     q
@@ -184,7 +184,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
       s isBinDo=0
       s:$l(ListRas,rashirenie)=1 isBinDo=1
       s:isBinClass=1 isBinDo=1
-
+      s:file.Size>32000 isBinDo=1
       if isBinDo=1
       { 
             s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
@@ -247,6 +247,26 @@ do ##class(Developper.UtilTools.ClassFromDir).run()</Description>
               q:file.AtEnd 
               s ind=ind+1 
               s html=file.ReadLine()
+              continue:$l($zcvt(html,"L"),"<!doctype html>")=2
+              s html=$zcvt(html,"I","UTF8")
+              s html=$replace(html,"<br>","<br />")
+              if $l(html,"<link ")>1,$l(html,"href")>1  {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              if $l(html,"<meta ")>1 {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              if $l(html,"<script ")>1,$l(html,"src")>1 {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+              
+              s html=$replace(html,"<br>","<br />")
               s ClassName2=""
               for  {
                   s ClassName2=$o(@gl@(ClassName2))
