@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-10-16 00:17:22">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-10-16 06:29:38">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64572,131.052708</TimeChanged>
+<TimeChanged>64572,23329.034748</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -16,8 +16,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="WebGL.Map3"
-     s:PathApp="" PathApp="C:\Users\SMWrap\Downloads\gl6\"
+    s:PacName="" PacName="WebGL.Map4"
+     s:PathApp="" PathApp="C:\Users\SMWrap\Downloads\gl7\"
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
@@ -251,6 +251,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
               continue:$l($zcvt(html,"L"),"<!doctype html>")=2
               s html=$zcvt(html,"I","UTF8")
               s html=$replace(html,"<br>","<br />")
+              s isChange=0
               // замена относительного пути на класс, если он есть в списке
               if $l(html,"../")>1 {
                  s PosStart=$l($p(html,"../",1))
@@ -270,9 +271,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                        q
                    }
                  }
+                 s isChange=1
               }
               // замена неполный путь внутри пакета  Скрипт
-              if $l(html,"<script ")>1,$l(html,"src")>1  {
+              if isChange=0,$l(html,"<script ")>1,$l(html,"src")>1  {
                  s PosStart=$l($p(html,"src=",1))+$l("src=")+1
                  s Symb=$e(html,PosStart,PosStart)
                  s Tmphtml=$e(html,PosStart+1,$l(html))
@@ -291,12 +293,9 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                        q
                    }
                  }
-                if $l(html,"/>")=1,$l(html,">")=2 {
-                   s html=$replace(html,">","/>")
-                }
               }
               // замена неполный путь внутри пакета  Стили
-              if $l(html,"<link ")>1,$l(html,"href")>1  {
+              if isChange=0,$l(html,"href")>1  {
                  s PosStart=$l($p(html,"href=",1))+$l("href=")+1
                  s Symb=$e(html,PosStart,PosStart)
                  s Tmphtml=$e(html,PosStart+1,$l(html))
@@ -313,11 +312,19 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                        q
                    }
                  }
+              }
+              
+              if $l(html,"<meta ")>1 {
                 if $l(html,"/>")=1,$l(html,">")=2 {
                    s html=$replace(html,">","/>")
                 }
               }
-              if $l(html,"<meta ")>1 {
+              if $l(html,"<script ")>1,$l(html,"src")>1  {
+                if $l(html,"/>")=1,$l(html,">")=2 {
+                   s html=$replace(html,">","/>")
+                }
+              }
+	          if $l(html,"<link ")>1,$l(html,"href")>1  {
                 if $l(html,"/>")=1,$l(html,">")=2 {
                    s html=$replace(html,">","/>")
                 }
