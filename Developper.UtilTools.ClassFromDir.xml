@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-13 15:55:19">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-10-15 19:04:03">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64569,56943.189728</TimeChanged>
+<TimeChanged>64571,68506.169116</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -16,8 +16,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="Demo.WebGL"
-     s:PathApp="" PathApp="D:\Delete\basicwebgl-master\basicwebgl-master\WebGL\samples\"
+    s:PacName="" PacName="Demo.Test"
+     s:PathApp="" PathApp="C:\AppServ\99\"
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
@@ -197,7 +197,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
              q:file.AtEnd 
              s ind=ind+1
         
-             s html=$system.Encryption.Base64Encode(file.Read(100))
+            ;  s html=$system.Encryption.Base64Encode(file.Read(100))
+             s html=$system.Encryption.Base64Encode(file.Read(32000))
              ; s html=$system.Encryption.Base64Encode(file.ReadLine())
              ; d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode("""_html_""")    ")
                s paramName="Frag"_ind
@@ -250,6 +251,25 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
               continue:$l($zcvt(html,"L"),"<!doctype html>")=2
               s html=$zcvt(html,"I","UTF8")
               s html=$replace(html,"<br>","<br />")
+              if $l(html,"../")>1 {
+                 s PosStart=$l($p(html,"../",1))
+                 s Symb=$e(html,PosStart,PosStart)
+                 s Tmphtml=$e(html,PosStart+1,$l(html))
+                 s PathAll=$p(Tmphtml,Symb,1)
+                 s Path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
+                 s Path=$replace(Path,"/",".")
+                 s PathSearch=$replace(Path,"..","")
+                 s ClassName3=""
+                 for  {
+                    s ClassName3=$o(@gl@(ClassName3))
+                    q:ClassName3=""
+                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
+                       s CacheName3=$lg(@gl@(ClassName3),3)
+                       s html=$REPLACE(html,PathAll,CacheName3)
+                       q
+                   }
+                 }
+              }
               if $l(html,"<link ")>1,$l(html,"href")>1  {
                 if $l(html,"/>")=1,$l(html,">")=2 {
                    s html=$replace(html,">","/>")
@@ -306,7 +326,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
            
             d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
             d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
-            d MethodDestroy.Implementation.WriteLine("   s ind=""""  f {  s ind=$o(@gl@(ind))  q:ind=""""  continue:ind=1  q:ind=@gl      d ..ExecFrag(@gl@(ind),""/*("","")*/"")     w $c(13,10)  }")
+            d MethodDestroy.Implementation.WriteLine("   s FragOnPageInd=""""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),""/*("","")*/"")     w $c(13,10)  }")
       }    
       
       d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
@@ -456,7 +476,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 Метод разбики исходного текста на Cache` код и HTML текст</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>SrcCode="",Beg="",End=""</FormalSpec>
-<Implementation><![CDATA[     q:SrcCode=""   q:Beg=""    q:End=""    for ind=1:1:$l(SrcCode,End){  s tmp=$p(SrcCode,End,ind)   s Html=$p(tmp,Beg,1)     s Code=$p(tmp,Beg,2)   w Html   TRY {     x Code    } CATCH ErrorHandle {    zw ErrorHandle  }    }
+<Implementation><![CDATA[     q:SrcCode=""   q:Beg=""    q:End=""    for ExecFragInd=1:1:$l(SrcCode,End){  s tmp=$p(SrcCode,End,ExecFragInd)   s Html=$p(tmp,Beg,1)     s Code=$p(tmp,Beg,2)   w Html   TRY {     x Code    } CATCH ErrorHandle {    zw ErrorHandle  }    }
 ]]></Implementation>
 </Method>
 </Class>
