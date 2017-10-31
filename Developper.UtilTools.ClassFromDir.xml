@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-10-16 06:29:38">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-31 08:45:41">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64572,23329.034748</TimeChanged>
+<TimeChanged>64583,58107.638275</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
 <Description>
 Загрузка файлолв из  паки в классы
 do ##class(Developper.UtilTools.ClassFromDir).run()
-do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
+do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")
+do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor\DOC\")</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="WebGL.Map4"
-     s:PathApp="" PathApp="C:\Users\SMWrap\Downloads\gl7\"
+    s:PacName="" PacName="Delete"
+     s:PathApp="" PathApp="C:\AppServ\www\222\"
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
@@ -39,7 +40,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 
 <Method name="GetDir2">
 <Description>
-Метод создает длобал сосписком файлов в каталоге ( и подкаталогах)</Description>
+Метод создает глобал сосписком файлов в каталоге ( и подкаталогах)</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>Dir,PathApp,PacName,gl</FormalSpec>
 <Implementation><![CDATA[
@@ -117,7 +118,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
          // <img src='HTML.img.NoFoto.cls' alt='Нет фото' >
     }
   
-      
+    s tt.ProcedureBlock=1
+             
     s MethodNameHead="OnPreHTTP"
     s MethodHead=##class(%Dictionary.MethodDefinition).%New(ClassName_"."_MethodNameHead)
     d MethodHead.Implementation.WriteLine("    Do %response.SetHeader(""Content-Type"","""_Typ_""") ")
@@ -179,12 +181,26 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
       s MethodDestroy.ClassMethod=1
       s file=##class(%FileCharacterStream).%New()
       s file.Filename=FileName
-      s ListRas=".html,.htm,.js,.css,.txt,"
+      s ListRas=".html,.htm,.js,.css,.txt,.scss"
       s ind=0
       s isBinDo=0
       s:$l(ListRas,rashirenie)=1 isBinDo=1
       s:isBinClass=1 isBinDo=1
       s:file.Size>32000 isBinDo=1
+      s:rashirenie="htm" isBinDo=0
+      s:rashirenie="html" isBinDo=0
+      s:rashirenie="css" isBinDo=0
+      if rashirenie="css" ,$e(FileName,$l(FileName)-$l(".min.css"),$l(FileName))=".min.css"
+      {
+         s isBinDo=1
+      }
+      s:rashirenie="js" isBinDo=0
+      if rashirenie="js" ,$e(FileName,$l(FileName)-$l(".min.js"),$l(FileName))=".min.js"
+      {
+         s isBinDo=1
+      }
+      s:file.Size>500000 isBinDo=1
+      
       if isBinDo=1
       { 
             s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
@@ -233,7 +249,11 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
            s paramName="XDataContet"
            s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
            s param1.Name=paramName
-           if rashirenie="css"{
+           
+           
+           if rashirenie="scss"{
+             d param1.Data.Write("<style type='text/css'>")
+           }elseif rashirenie="css"{
               d param1.Data.Write("<style type='text/css'>")
            }elseif rashirenie="js"{
               d param1.Data.Write("<script type='application/x-javascript'>")
@@ -284,6 +304,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                  s PathSearch=$replace(PathSearch,"/",".")
                  s ClassName3=""
                  for  {
+	                s $ZTRAP="err2"
                     s ClassName3=$o(@gl@(ClassName3))
                     q:ClassName3=""
                     s ^deb(PathSearch,ClassName3)=PathSearch
@@ -291,6 +312,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                        s CacheName3=$lg(@gl@(ClassName3),3)
                        s html=$REPLACE(html,PathAll,CacheName3)
                        q
+err2                       
                    }
                  }
               }
@@ -304,6 +326,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                  s PathSearch=$replace(path,"/",".")
                  s ClassName3=""
                  for  {
+	                s $ZTRAP="err3"
                     s ClassName3=$o(@gl@(ClassName3))
                     q:ClassName3=""
                     if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
@@ -311,6 +334,28 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                        s html=$REPLACE(html,PathAll,CacheName3)
                        q
                    }
+err3                   
+                 }
+              }
+               // замена неполный путь внутри пакета  Стили
+              if isChange=0,rashirenie="css",$l(html,"url")>1  {
+                 s PosStart=$l($p(html,"url(",1))+$l("url(")+1
+                 s Symb=$e(html,PosStart,PosStart)
+                 s Tmphtml=$e(html,PosStart+1,$l(html))
+                 s PathAll=$p(Tmphtml,Symb,1)
+                 s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
+                 s PathSearch=$replace(path,"/",".")
+                 s ClassName3=""
+                 for  {
+	                s $ZTRAP="err4"
+                    s ClassName3=$o(@gl@(ClassName3))
+                    q:ClassName3=""
+                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
+                       s CacheName3=$lg(@gl@(ClassName3),3)
+                       s html=$REPLACE(html,PathAll,CacheName3)
+                       q
+                   }
+err4                   
                  }
               }
               
@@ -333,6 +378,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
               s html=$replace(html,"<br>","<br />")
               s ClassName2=""
               for  {
+                  s $ZTRAP="err"
                   s ClassName2=$o(@gl@(ClassName2))
                   q:ClassName2=""
                   s FileName2=$lg(@gl@(ClassName2),1)
@@ -353,13 +399,16 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 	                  }
 	                  s isAddHTMLCacheLib=1
                   }
+err                  
                }
                // s html=$ZCVT(html,"o","XML")
                // s html=$REPLACE(html,"&","&amp;")
                s html=$c(10)_html
                d param1.Data.Write(html)
            }
-          if rashirenie="css"{
+           if rashirenie="scss"{
+             d param1.Data.Write($c(10)_"</style>")
+           }elseif rashirenie="css"{
               d param1.Data.Write($c(10)_"</style>")
            }elseif rashirenie="js"{
               d param1.Data.Write($c(10)_"</script>")
@@ -369,10 +418,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
            d param1.%Save()
            d tt.XDatas.Insert(param1)
            w tt.%Save(),!
-           
-            d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
-            d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
-            d MethodDestroy.Implementation.WriteLine("   s FragOnPageInd=""""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),""/*("","")*/"")     w $c(13,10)  }")
+           d MethodDestroy.Implementation.WriteLine("     d ..DrawXdata("""_paramName_""")")
+          ;  d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
+          ;  d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
+          ;  d MethodDestroy.Implementation.WriteLine("   s FragOnPageInd=""""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),""/*("","")*/"")     w $c(13,10)  }")
       }    
       
       d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
@@ -383,6 +432,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
       ; копируем методы
       ; d ..CopyMethod(##this,"ContentTypeLocal",tt,"ContentType")
       d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
+      d ..CopyMethod(##this,"DrawXdata",tt,"DrawXdata")
+      
       Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
    }
 ]]></Implementation>
@@ -523,6 +574,20 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 <ClassMethod>1</ClassMethod>
 <FormalSpec>SrcCode="",Beg="",End=""</FormalSpec>
 <Implementation><![CDATA[     q:SrcCode=""   q:Beg=""    q:End=""    for ExecFragInd=1:1:$l(SrcCode,End){  s tmp=$p(SrcCode,End,ExecFragInd)   s Html=$p(tmp,Beg,1)     s Code=$p(tmp,Beg,2)   w Html   TRY {     x Code    } CATCH ErrorHandle {    zw ErrorHandle  }    }
+]]></Implementation>
+</Method>
+
+<Method name="DrawXdata">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Name={##This_":XDataContet"}</FormalSpec>
+<Language>cache</Language>
+<ReturnType>%Library.Status</ReturnType>
+<Implementation><![CDATA[
+   if $l(Name,":")=1,$e(Name,1,2)'=".."{  s Name=".."_Name  }
+   if $e(Name,1,2)=".." {  s ClassName=##This,XdataName=$e(Name,3,$l(Name))
+   }else{                  s ClassName=$p(Name,":",1),XdataName=$p(Name,":",2)  }
+   s gl="^oddDEF("""_ClassName_""",""x"","""_XdataName_""",21)"  
+   s FragOnPageInd=""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),"/*(",")*/")     w $c(13,10)  }
 ]]></Implementation>
 </Method>
 </Class>
