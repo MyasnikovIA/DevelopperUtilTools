@@ -1,36 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 11:32:56">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 13:43:26">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
-do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
+do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")
+
+  do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64615,41522.063032</TimeChanged>
+<TimeChanged>64615,49352.751948</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
 <Description>
 Загрузка файлолв из  паки в классы
 do ##class(Developper.UtilTools.ClassFromDir).run()
-do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
+do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")
+
+do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev.editor","C:\AppServ\three.js-dev\three.js-dev\editor\")
+do ##class(Developper.UtilTools.ClassFromDir).run("HTML.jQueryEasyUI","C:\AppServ\jquery-easyui-1.5.3\")
+do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\three.js-dev\three.js-dev\")</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-     s:PacName="" PacName="Demo.jQueryEasyUITEST"
+	
+    ; s:PacName="" PacName="HTML.ThreeJSDev.editor"
+    ; s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\editor\"
+     
+     s:PacName="" PacName="HTML.jQueryEasyUI"
      s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
      
-     
-     
      ; создаем список файлов, которые помещаем в класс как бинарные файлы base64
-     s gl2="^mtempIsklBIN"
+     s gl2="^IsklBIN"_$JOB
      s @gl2@("jquery.easyui.min.js")=1
      s @gl2@("jquery.easyui.mobile.js")=1
      s @gl2@("jquery.min.js")=1
-     
+     s @gl2@("jquery.js")=1
+     s @gl2@("three.js")=1
+     s @gl2@("three.min.js")=1
+     s @gl2@("three.module.js")=1
      
     // создаем список всех файлов с подкаталогами 
     s Dir=$zse(PathApp_"*")
-    s gl="^deb3"
+    s gl="^DevelopperUtilToolsClassFromDir"_$JOB
     k @gl
     d ..GetDir2(Dir,PathApp,PacName,gl)
     
@@ -38,12 +49,38 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
     d ..CreateClass(gl,isBinClass)
     
     ; Принудительно меняем текст в классах
-    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='Demo.jQueryEasyUITEST.demo.demo.cls'  rel='stylesheet' />")
+    ; do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='Demo.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")
    
-    zw @gl
+    ; zw @gl
     k @gl
+    k @gl2
     w "OK"
     q
+]]></Implementation>
+</Method>
+
+<Method name="replaceClassnameAfte">
+<Description>
+окончательная замена имени файлов на имя класса
+do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+   s gl="^oddDEF"
+   s ClassName=""
+   for {
+      s ClassName=$o(@gl@(ClassName))
+      q:ClassName=""
+      continue:$l(ClassName,"%")>1
+      continue:$l(ClassName,"Developper.UtilTools")>1
+      ; s ClassName="HTML.jQueryEasyUI.demo.combobox.combobox.data1"
+      if $d(@gl@(ClassName,"p","NameOnly",22)),$d( @gl@(ClassName,"p","DstName",22)) {
+          s NameOnly=@gl@(ClassName,"p","NameOnly",22)
+          s DstName=@gl@(ClassName,"p","DstName",22)
+          do ##class(Developper.UtilTools.ClassFromDir).replaceTXT(NameOnly,DstName)
+          w !,"Обработан:"_ClassName
+       }
+   }
+   w "!!OK!!"
 ]]></Implementation>
 </Method>
 
@@ -70,16 +107,20 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
 		    s nameX=$o(@gl@(ClassName,block,nameX))
 	        q:nameX=""
 	        s codBlock=21
-	        s line=""
-	        for {
-	            s line=$o(@gl@(ClassName,block,nameX,codBlock,line))
-	            q:line=""
-	            s code=@gl@(ClassName,block,nameX,codBlock,line)
-	            if $l(code,Src)>1 {
-		           s isSaveClass=1
-	               s code=$REPLACE(code,Src,Dst)
-	               s @gl@(ClassName,block,nameX,codBlock,line)=code
-	            }
+	        if $d(@gl@(ClassName,block,nameX,codBlock)){
+              s $ZTRAP="EnyErr"
+	          s line=""
+	          for {
+	              s line=$o(@gl@(ClassName,block,nameX,codBlock,line))
+	              q:line=""
+	              s code=@gl@(ClassName,block,nameX,codBlock,line)
+	              if $l(code,Src)>1 {
+		             s isSaveClass=1
+	                 s code=$REPLACE(code,Src,Dst)
+  	                 s @gl@(ClassName,block,nameX,codBlock,line)=code
+	              }
+	           }
+EnyErr	           
 	        }
 	     }
       }
@@ -123,7 +164,6 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
         s Sname=$REPLACE(name,PathApp,"")
         s LongPath=$e(Sname,1,$l(Sname)-$l( $p(Sname,"\",$l(Sname,"\")  ) ))
         s NameOnly=$e(Sname,$l(LongPath)+1,$l(Sname))
-        
         
         s ClasName=$REPLACE(name,PathApp,"")
         s ClasName=$REPLACE( ClasName," ","")
@@ -282,12 +322,12 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
       
       
       
-      s gl2="^mtempIsklBIN"
+      s gl2="^IsklBIN"_$JOB
       s indS=""
 	  for  {
 		  s indS=$o(@gl2@(indS))
 	      q:indS=""
-		 if NameOnly=indS{ 
+		 if $ZCVT(NameOnly,"L")=$ZCVT(indS,"L"){ 
 	        s isBinDo=1
 	     }
      }
@@ -405,7 +445,7 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
                  for  {
                     s ClassName3=$o(@gl@(ClassName3))
                     q:ClassName3=""
-                    s ^deb(PathSearch,ClassName3)=PathSearch
+                    ; s ^deb(PathSearch,ClassName3)=PathSearch
                     if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
                        s CacheName3=$lg(@gl@(ClassName3),3)
                        s html=$REPLACE(html,PathAll,CacheName3)
@@ -460,8 +500,6 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
                   if $l(html,JsName2)>1{
                       s html=$REPLACE(html ,JsName2,CacheName2)
                   }
-                  
-                  
                   
                   /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
                   ;  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
@@ -613,6 +651,7 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
 <ClassMethod>1</ClassMethod>
 <FormalSpec>ClassNameOld="",OldNameMethod="",ClassNameNew="",NewNameMethod=""</FormalSpec>
 <Implementation><![CDATA[
+   s $ZTRAP="errorCopyMeth"
      if '$isobject(ClassNameNew){
        s ttNew=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameNew)
      }else{
@@ -635,7 +674,7 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
      .   s obj=ttOld.Methods.GetAt(i).%ConstructClone()
      .   d ttNew.Methods.Insert(obj) 
      .   w ttNew.%Save()
-
+errorCopyMeth
      q
 ]]></Implementation>
 </Method>
