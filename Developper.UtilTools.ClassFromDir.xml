@@ -1,12 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 10:37:56">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 11:32:56">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64615,36929.018785</TimeChanged>
+<TimeChanged>64615,41522.063032</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
+
+<Method name="run">
+<Description>
+Загрузка файлолв из  паки в классы
+do ##class(Developper.UtilTools.ClassFromDir).run()
+do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
+<Implementation><![CDATA[
+     s:PacName="" PacName="Demo.jQueryEasyUITEST"
+     s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
+     
+     
+     
+     ; создаем список файлов, которые помещаем в класс как бинарные файлы base64
+     s gl2="^mtempIsklBIN"
+     s @gl2@("jquery.easyui.min.js")=1
+     s @gl2@("jquery.easyui.mobile.js")=1
+     s @gl2@("jquery.min.js")=1
+     
+     
+    // создаем список всех файлов с подкаталогами 
+    s Dir=$zse(PathApp_"*")
+    s gl="^deb3"
+    k @gl
+    d ..GetDir2(Dir,PathApp,PacName,gl)
+    
+    // создаем классы
+    d ..CreateClass(gl,isBinClass)
+    
+    ; Принудительно меняем текст в классах
+    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='Demo.jQueryEasyUITEST.demo.demo.cls'  rel='stylesheet' />")
+   
+    zw @gl
+    k @gl
+    w "OK"
+    q
+]]></Implementation>
+</Method>
 
 <Method name="replaceTXT">
 <Description><![CDATA[
@@ -55,40 +94,6 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
 ]]></Implementation>
 </Method>
 
-<Method name="run">
-<Description>
-Загрузка файлолв из  паки в классы
-do ##class(Developper.UtilTools.ClassFromDir).run()
-do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>PathApp="",PacName="",isBinClass=0,ArrBinFile=""</FormalSpec>
-<Implementation><![CDATA[
-     s:PacName="" PacName="HTML.jQueryEasyUI"
-     s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
-     
-     ; создаем список бинарных файлов
-     if ArrBinFile = "" {
-         s ArrBinFile("jquery.easyui.min.js")=1
-         s ArrBinFile("jquery.easyui.mobile.js")=1
-         s ArrBinFile("jquery.min.js")=1
-     }
-     
-    s Dir=$zse(PathApp_"*")
-    s gl="^deb3"
-    k @gl
-    d ..GetDir2(Dir,PathApp,PacName,gl)
-    d ..CreateClass(gl,isBinClass,ArrBinFile)
-    
-    ; Принудительно меняем текст в классах
-    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")
-   
-    zw @gl
-    k @gl
-    w "OK"
-    q
-]]></Implementation>
-</Method>
-
 <Method name="ExportDir">
 <Description>
 Выгрузка классов в папку</Description>
@@ -117,7 +122,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
         ; w !,name  
         s Sname=$REPLACE(name,PathApp,"")
         s LongPath=$e(Sname,1,$l(Sname)-$l( $p(Sname,"\",$l(Sname,"\")  ) ))
-        s NameOnly=$e(Sname,$l(LongPath),$l(Sname))
+        s NameOnly=$e(Sname,$l(LongPath)+1,$l(Sname))
         
         
         s ClasName=$REPLACE(name,PathApp,"")
@@ -150,7 +155,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
 <Description>
 создание классов из списока фалов помещенных ранее в глобалы</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>gl,isBinClass=0,ArrBinFile=""</FormalSpec>
+<FormalSpec>gl,isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
       s ClassName=""
       for  {
@@ -220,11 +225,25 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
       d param.%Save()
       d tt.Parameters.Insert(param)
       
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".SrcNamee")
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".SrcName")
       s param.Name="SrcName"    
       s param.Default=JsName
       d param.%Save()
       d tt.Parameters.Insert(param)
+
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".NameOnly")
+      s param.Name="NameOnly"    
+      s param.Default=NameOnly
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+
+      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".LongPath")
+      s param.Name="LongPath"    
+      s param.Default=LongPath
+      d param.%Save()
+      d tt.Parameters.Insert(param)
+
+
 
       s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".DstName")
       s param.Name="DstName"    
@@ -250,7 +269,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
       s MethodDestroy.ClassMethod=1
       s file=##class(%FileCharacterStream).%New()
       s file.Filename=FileName
-      s ListRas=".html,.htm,.js,.css,.txt,.scss"
+      s ListRas=".html,.htm,.js,.css,.txt,.scss,.json"
       s ind=0
       s isBinDo=0
       s:$l(ListRas,rashirenie)=1 isBinDo=1
@@ -261,16 +280,24 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
       s:rashirenie="css" isBinDo=0
       s:rashirenie="js" isBinDo=0
       
-      if (ArrBinFile'=""){
-        s subInd=""
-        for {
-	        s subInd=$o(ArrBinFile(subInd))
-	        q:subInd=""
-	        if $zcvt(subInd,"L")=$zcvt(NameOnly,"L"){
-		        s isBinDo=1
-	        }
-        }
-      }
+      
+      
+      s gl2="^mtempIsklBIN"
+      s indS=""
+	  for  {
+		  s indS=$o(@gl2@(indS))
+	      q:indS=""
+		 if NameOnly=indS{ 
+	        s isBinDo=1
+	     }
+     }
+      
+	    ;     s subInd="jquery.min.js"
+	    ;     if $zcvt(subInd,"L")=$zcvt(NameOnly,"L"){
+        ;	        s isBinDo=1
+	    ;    }
+	    
+      // }
       
       if isBinDo=1
       { 
@@ -437,14 +464,14 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppS
                   
                   
                   /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
-                  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
-	                  if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
-	                    s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	                  }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
-	                    s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	                  }
-	                  s isAddHTMLCacheLib=1
-                  }
+                  ;  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
+	              ;      if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
+	              ;        s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	              ;      }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
+	              ;        s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	              ;      }
+	              ;      s isAddHTMLCacheLib=1
+                  ;  }
                }
                // s html=$ZCVT(html,"o","XML")
                // s html=$REPLACE(html,"&","&amp;")
