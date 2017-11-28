@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 14:27:10">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 16:09:37">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
@@ -7,7 +7,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-ma
 
   do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64615,51544.709435</TimeChanged>
+<TimeChanged>64615,57763.720783</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -29,6 +29,11 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
      s:PacName="" PacName="HTML.ThreeJS"
      s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\"
      
+   ;  s:PacName="" PacName="DELETE.BABYLON"
+   ;  s:PathApp="" PathApp="C:\AppServ\BabylonJS___RTS\"
+     
+     
+     
      ; создаем список файлов, которые помещаем в класс как бинарные файлы base64
      s gl2="^IsklBIN"_$JOB
      s @gl2@("jquery.easyui.min.js")=1
@@ -38,6 +43,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
      s @gl2@("three.js")=1
      s @gl2@("three.min.js")=1
      s @gl2@("three.module.js")=1
+     s @gl2@("babylon.min.js")=1
+     s @gl2@("babylon.js")=1
+     
+     
      
     // создаем список всех файлов с подкаталогами 
     s Dir=$zse(PathApp_"*")
@@ -54,7 +63,9 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
     ; zw @gl
     k @gl
     k @gl2
-    w "OK"
+    w !,"-- OK --"
+    do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()
+    w !,"-- все закончено --",!
     q
 ]]></Implementation>
 </Method>
@@ -124,6 +135,35 @@ EnyErr
 	        }
 	     }
       }
+      
+      ; ^oddDEF("DELETE.BABYLON.RtsCamera","m","JSContet",30,574)="
+
+       s block="m"
+       if $d(@gl@(ClassName,block)){
+	   s nameM=""
+	    for  {
+		    s nameM=$o(@gl@(ClassName,block,nameM))
+	        q:nameM=""
+	        s codBlock=30
+	        if $d(@gl@(ClassName,block,nameM,codBlock)){
+              s $ZTRAP="EnyErr2"
+	          s line=""
+	          for {
+	              s line=$o(@gl@(ClassName,block,nameM,codBlock,line))
+	              q:line=""
+	              s code=@gl@(ClassName,block,nameM,codBlock,line)
+	              if $l(code,Src)>1 {
+		             s isSaveClass=1
+	                 s code=$REPLACE(code,Src,Dst)
+  	                 s @gl@(ClassName,block,nameM,codBlock,line)=code
+	              }
+	           }
+EnyErr2	           
+	        }
+	     }
+      }
+      
+      
       if isSaveClass=1 {
          s tt.Description=tt.Description_" "
          w tt.%Save(),! 
@@ -225,7 +265,9 @@ EnyErr
         s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
         s Typ=..ContentTypeLocal(FileName)
         w !,ClassName,!
-        Do:$zObjClassMethod("%CompiledClass","%ExistsId",ClassName)=1 $system.OBJ.Delete(ClassName) 
+        ; Do:$zObjClassMethod("%CompiledClass","%ExistsId",ClassName)=1 $system.OBJ.Delete(ClassName) 
+        ; continue:$zObjClassMethod("%CompiledClass","%ExistsId",ClassName)=1
+        
         s tt=##class(%Dictionary.ClassDefinition).%New(ClassName)
         s tt.Super="%CSP.Page"
         s tt.Description=""
@@ -392,163 +434,74 @@ EnyErr
                */
             }
       }else{
-           s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
-           s param.Name="isBinFile"    
-           s param.Default=0
-           d param.%Save()
-           d tt.Parameters.Insert(param)
+               s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
+               s param.Name="isBinFile"    
+               s param.Default=0
+               d param.%Save()
+               d tt.Parameters.Insert(param)
 
-           
-           s paramName="XDataContet"
-           s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
-           s param1.Name=paramName
-           
-           
-           if rashirenie="scss"{
-             d param1.Data.Write("<style type='text/css'>")
-           }elseif rashirenie="css"{
-              d param1.Data.Write("<style type='text/css'>")
-           }elseif rashirenie="js"{
-              d param1.Data.Write("<script type='application/x-javascript'>")
-           }else{
-              d param1.Data.Write("<data>")
-           }
-           
-           s isAddHTMLCacheLib=0
-           if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
-           if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
-           f  {
-              q:file.AtEnd 
-              s ind=ind+1 
-              s html=file.ReadLine()
-              continue:$l($zcvt(html,"L"),"<!doctype html>")=2
-              s html=$zcvt(html,"I","UTF8")
-              s html=$replace(html,"<br>","<br />")
-              s isChange=0
-              // замена относительного пути на класс, если он есть в списке
-              if $l(html,"../")>1 {
-                 s PosStart=$l($p(html,"../",1))
-                 s Symb=$e(html,PosStart,PosStart)
-                 s Tmphtml=$e(html,PosStart+1,$l(html))
-                 s PathAll=$p(Tmphtml,Symb,1)
-                 s Path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
-                 s Path=$replace(Path,"/",".")
-                 s PathSearch=$replace(Path,"..","")
-                 s ClassName3=""
-                 for  {
-                    s ClassName3=$o(@gl@(ClassName3))
-                    q:ClassName3=""
-                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
-                       s CacheName3=$lg(@gl@(ClassName3),3)
-                       s html=$REPLACE(html,PathAll,CacheName3)
-                       s html=$REPLACE(html,"../","")
-                       q
-                   }
-                 }
-                 s isChange=1
-              }
-              // замена неполный путь внутри пакета  Скрипт
-              if isChange=0,$l(html,"<script ")>1,$l(html,"src")>1  {
-                 s PosStart=$l($p(html,"src=",1))+$l("src=")+1
-                 s Symb=$e(html,PosStart,PosStart)
-                 s Tmphtml=$e(html,PosStart+1,$l(html))
-                 s PathAll=$p(Tmphtml,Symb,1)
-                 s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
-                 s PathSearch=$replace(path,".","")
-                 s PathSearch=$replace(PathSearch,"/",".")
-                 s ClassName3=""
-                 for  {
-                    s ClassName3=$o(@gl@(ClassName3))
-                    q:ClassName3=""
-                    ; s ^deb(PathSearch,ClassName3)=PathSearch
-                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
-                       s CacheName3=$lg(@gl@(ClassName3),3)
-                       s html=$REPLACE(html,PathAll,CacheName3)
-                       q
-                   }
-                 }
-              }
-              // замена неполный путь внутри пакета  Стили
-              if isChange=0,$l(html,"href")>1  {
-                 s PosStart=$l($p(html,"href=",1))+$l("href=")+1
-                 s Symb=$e(html,PosStart,PosStart)
-                 s Tmphtml=$e(html,PosStart+1,$l(html))
-                 s PathAll=$p(Tmphtml,Symb,1)
-                 s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
-                 s PathSearch=$replace(path,"/",".")
-                 s ClassName3=""
-                 for  {
-                    s ClassName3=$o(@gl@(ClassName3))
-                    q:ClassName3=""
-                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
-                       s CacheName3=$lg(@gl@(ClassName3),3)
-                       s html=$REPLACE(html,PathAll,CacheName3)
-                       q
-                   }
-                 }
-              }
-              
-              if $l(html,"<meta ")>1 {
-                if $l(html,"/>")=1,$l(html,">")=2 {
-                   s html=$replace(html,">","/>")
-                }
-              }
-              if $l(html,"<script ")>1,$l(html,"src")>1  {
-                if $l(html,"/>")=1,$l(html,">")=2 {
-                   s html=$replace(html,">","/>")
-                }
-              }
-	          if $l(html,"<link ")>1,$l(html,"href")>1  {
-                if $l(html,"/>")=1,$l(html,">")=2 {
-                   s html=$replace(html,">","/>")
-                }
-              }
-
-              s html=$replace(html,"<br>","<br />")
-              s ClassName2=""
-              for  {
-                  s ClassName2=$o(@gl@(ClassName2))
-                  q:ClassName2=""
-                  s FileName2=$lg(@gl@(ClassName2),1)
-                  s JsName2=$lg(@gl@(ClassName2),2)
-                  s CacheName2=$lg(@gl@(ClassName2),3)
-                  if $l(html,JsName2)>1{
-                      s html=$REPLACE(html ,JsName2,CacheName2)
-                  }
-                  
-                  /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
-                  ;  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
-	              ;      if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
-	              ;        s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	              ;      }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
-	              ;        s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	              ;      }
-	              ;      s isAddHTMLCacheLib=1
-                  ;  }
+	      if rashirenie="js" {
+               
+               s paramName="JSContet"
+               s param1=##class(%Dictionary.MethodDefinition).%New(tt.Name_"."_paramName)
+               s param1.Name=paramName
+               s param1.ClientMethod=1
+               s param1.Language="javascript"
+               for  {
+                  q:file.AtEnd 
+                  s ind=ind+1 
+                  s html=file.ReadLine()
+                  s html=..ReplaceTextCode(html,gl)
+                  d param1.Implementation.Write(html)
                }
-               // s html=$ZCVT(html,"o","XML")
-               // s html=$REPLACE(html,"&","&amp;")
-               s html=$c(10)_html
-               d param1.Data.Write(html)
-           }
-           if rashirenie="scss"{
-             d param1.Data.Write($c(10)_"</style>")
-           }elseif rashirenie="css"{
-              d param1.Data.Write($c(10)_"</style>")
-           }elseif rashirenie="js"{
-              d param1.Data.Write($c(10)_"</script>")
-           }else{
-              d param1.Data.Write($c(10)_"</data>")
-           }
-           d param1.%Save()
-           d tt.XDatas.Insert(param1)
-           w tt.%Save(),!
-           d MethodDestroy.Implementation.WriteLine("     d ..DrawXdata("""_paramName_""")")
-          ;  d MethodDestroy.Implementation.WriteLine("   s XdataName="""_paramName_"""")
-          ;  d MethodDestroy.Implementation.WriteLine("   s gl=""^oddDEF(""""""_##this_"""""",""""x"""",""""""_XdataName_"""""",21)""  ")
-          ;  d MethodDestroy.Implementation.WriteLine("   s FragOnPageInd=""""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),""/*("","")*/"")     w $c(13,10)  }")
+               d param1.%Save()
+               d tt.Methods.Insert(param1)
+               w tt.%Save(),!
+               d MethodDestroy.Implementation.WriteLine("     s MethodName="""_paramName_""" ")
+               d MethodDestroy.Implementation.WriteLine("     s ParentClassName1="""_tt.Name_""" ")
+               d MethodDestroy.Implementation.WriteLine("     for ind=1:1:^oddDEF(ParentClassName1,""m"",MethodName,30) {   ")
+               d MethodDestroy.Implementation.WriteLine("        d ..ExecFrag(^oddDEF(ParentClassName1,""m"",MethodName,30,ind),""/*("","")*/"")  ")
+               d MethodDestroy.Implementation.WriteLine("        w $c(13,10)  ")
+               d MethodDestroy.Implementation.WriteLine("     }               ")
+	      }else{
+
+               s paramName="XDataContet"
+               s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
+               s param1.Name=paramName
+           
+               if rashirenie="scss"{
+                 d param1.Data.Write("<style type='text/css'>")
+               }elseif rashirenie="css"{
+                  d param1.Data.Write("<style type='text/css'>")
+               }elseif rashirenie="js"{
+                  d param1.Data.Write("<script type='application/x-javascript'>")
+               }else{
+                  d param1.Data.Write("<data>")
+               }
+           
+               f  {
+                  q:file.AtEnd 
+                  s ind=ind+1 
+                  s html=file.ReadLine()
+                  continue:$l($zcvt(html,"L"),"<!doctype html>")=2
+                  s html=..ReplaceTextCode(html,gl)
+                  d param1.Data.Write(html)
+               }
+               if rashirenie="scss"{
+                 d param1.Data.Write($c(10)_"</style>")
+               }elseif rashirenie="css"{
+                  d param1.Data.Write($c(10)_"</style>")
+               }elseif rashirenie="js"{
+                  d param1.Data.Write($c(10)_"</script>")
+               }else{
+                  d param1.Data.Write($c(10)_"</data>")
+               }
+               d param1.%Save()
+               d tt.XDatas.Insert(param1)
+               w tt.%Save(),!
+               d MethodDestroy.Implementation.WriteLine("     d ..DrawXdata("""_paramName_""")")
+	      }
       }    
-      
       d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
       s MethodDestroy.Internal=0
       d MethodDestroy.%Save()
@@ -558,9 +511,129 @@ EnyErr
       ; d ..CopyMethod(##this,"ContentTypeLocal",tt,"ContentType")
       d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
       d ..CopyMethod(##this,"DrawXdata",tt,"DrawXdata")
-      
       Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
    }
+]]></Implementation>
+</Method>
+
+<Method name="ReplaceTextCode">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>html,gl</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+                s isAddHTMLCacheLib=0
+               if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+               if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+ 
+                 
+                  s html=$zcvt(html,"I","UTF8")
+                  s html=$replace(html,"<br>","<br />")
+                  s isChange=0
+                  // замена относительного пути на класс, если он есть в списке
+                  if $l(html,"../")>1 {
+                     s PosStart=$l($p(html,"../",1))
+                     s Symb=$e(html,PosStart,PosStart)
+                     s Tmphtml=$e(html,PosStart+1,$l(html))
+                     s PathAll=$p(Tmphtml,Symb,1)
+                     s Path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
+                     s Path=$replace(Path,"/",".")
+                     s PathSearch=$replace(Path,"..","")
+                     s ClassName3=""
+                     for  {
+                        s ClassName3=$o(@gl@(ClassName3))
+                        q:ClassName3=""
+                        if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
+                           s CacheName3=$lg(@gl@(ClassName3),3)
+                           s html=$REPLACE(html,PathAll,CacheName3)
+                           s html=$REPLACE(html,"../","")
+                           q
+                       }
+                     }
+                     s isChange=1
+                  }
+                  // замена неполный путь внутри пакета  Скрипт
+                  if isChange=0,$l(html,"<script ")>1,$l(html,"src")>1  {
+                     s PosStart=$l($p(html,"src=",1))+$l("src=")+1
+                     s Symb=$e(html,PosStart,PosStart)
+                     s Tmphtml=$e(html,PosStart+1,$l(html))
+                     s PathAll=$p(Tmphtml,Symb,1)
+                     s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
+                     s PathSearch=$replace(path,".","")
+                     s PathSearch=$replace(PathSearch,"/",".")
+                     s ClassName3=""
+                     for  {
+                        s ClassName3=$o(@gl@(ClassName3))
+                        q:ClassName3=""
+                        ; s ^deb(PathSearch,ClassName3)=PathSearch
+                        if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
+                           s CacheName3=$lg(@gl@(ClassName3),3)
+                           s html=$REPLACE(html,PathAll,CacheName3)
+                           q
+                       }
+                     }
+                  }
+                  // замена неполный путь внутри пакета  Стили
+                  if isChange=0,$l(html,"href")>1  {
+                     s PosStart=$l($p(html,"href=",1))+$l("href=")+1
+                     s Symb=$e(html,PosStart,PosStart)
+                     s Tmphtml=$e(html,PosStart+1,$l(html))
+                     s PathAll=$p(Tmphtml,Symb,1)
+                     s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
+                     s PathSearch=$replace(path,"/",".")
+                     s ClassName3=""
+                     for  {
+                        s ClassName3=$o(@gl@(ClassName3))
+                        q:ClassName3=""
+                        if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
+                           s CacheName3=$lg(@gl@(ClassName3),3)
+                           s html=$REPLACE(html,PathAll,CacheName3)
+                           q
+                       }
+                     }
+                  }
+              
+                  if $l(html,"<meta ")>1 {
+                    if $l(html,"/>")=1,$l(html,">")=2 {
+                       s html=$replace(html,">","/>")
+                    }
+                  }
+                  if $l(html,"<script ")>1,$l(html,"src")>1  {
+                    if $l(html,"/>")=1,$l(html,">")=2 {
+                       s html=$replace(html,">","/>")
+                    }
+                  }
+	              if $l(html,"<link ")>1,$l(html,"href")>1  {
+                    if $l(html,"/>")=1,$l(html,">")=2 {
+                       s html=$replace(html,">","/>")
+                    }
+                  }
+
+                  s html=$replace(html,"<br>","<br />")
+                  s ClassName2=""
+                  for  {
+                      s ClassName2=$o(@gl@(ClassName2))
+                      q:ClassName2=""
+                      s FileName2=$lg(@gl@(ClassName2),1)
+                      s JsName2=$lg(@gl@(ClassName2),2)
+                      s CacheName2=$lg(@gl@(ClassName2),3)
+                      if $l(html,JsName2)>1{
+                          s html=$REPLACE(html ,JsName2,CacheName2)
+                      }
+                      /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
+                      ;  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
+	                  ;      if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
+	                  ;        s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  ;      }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
+	                  ;        s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+	                  ;      }
+	                  ;      s isAddHTMLCacheLib=1
+                      ;  }
+                   }
+                   // s html=$ZCVT(html,"o","XML")
+                   // s html=$REPLACE(html,"&","&amp;")
+                   s html=$c(10)_html
+                   q html
 ]]></Implementation>
 </Method>
 
