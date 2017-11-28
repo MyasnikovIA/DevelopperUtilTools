@@ -1,29 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-10-31 09:34:50">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 10:37:56">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
 do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-master\HTML\js\Three\src\","HTML.js.Three")</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64583,58107.638275</TimeChanged>
+<TimeChanged>64615,36929.018785</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
+
+<Method name="replaceTXT">
+<Description><![CDATA[
+do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Src="",Dst=""</FormalSpec>
+<Implementation><![CDATA[
+   s gl="^oddDEF"
+   s ClassName=""
+   for {
+      s ClassName=$o(@gl@(ClassName))
+      q:ClassName=""
+      continue:$l(ClassName,"%")>1
+      continue:$l(ClassName,"Developper.UtilTools")>1
+      ; s ClassName="HTML.jQueryEasyUI.demo.demo"
+      s block="x"
+      s tt=##class(%Dictionary.ClassDefinition).%OpenId(ClassName)
+      s isSaveClass=0
+      if $d(@gl@(ClassName,block)){
+	    s nameX=""
+	    for  {
+		    s nameX=$o(@gl@(ClassName,block,nameX))
+	        q:nameX=""
+	        s codBlock=21
+	        s line=""
+	        for {
+	            s line=$o(@gl@(ClassName,block,nameX,codBlock,line))
+	            q:line=""
+	            s code=@gl@(ClassName,block,nameX,codBlock,line)
+	            if $l(code,Src)>1 {
+		           s isSaveClass=1
+	               s code=$REPLACE(code,Src,Dst)
+	               s @gl@(ClassName,block,nameX,codBlock,line)=code
+	            }
+	        }
+	     }
+      }
+      if isSaveClass=1 {
+         s tt.Description=tt.Description_" "
+         w tt.%Save(),! 
+         Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
+         w !,ClassName
+      }
+   }	  
+   q
+]]></Implementation>
+</Method>
 
 <Method name="run">
 <Description>
 Загрузка файлолв из  паки в классы
 do ##class(Developper.UtilTools.ClassFromDir).run()
-do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")
-do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor\DOC\")</Description>
+do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
+<FormalSpec>PathApp="",PacName="",isBinClass=0,ArrBinFile=""</FormalSpec>
 <Implementation><![CDATA[
-    s:PacName="" PacName="Delete"
-     s:PathApp="" PathApp="C:\AppServ\www\222\"
+     s:PacName="" PacName="HTML.jQueryEasyUI"
+     s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
+     
+     ; создаем список бинарных файлов
+     if ArrBinFile = "" {
+         s ArrBinFile("jquery.easyui.min.js")=1
+         s ArrBinFile("jquery.easyui.mobile.js")=1
+         s ArrBinFile("jquery.min.js")=1
+     }
+     
     s Dir=$zse(PathApp_"*")
     s gl="^deb3"
     k @gl
     d ..GetDir2(Dir,PathApp,PacName,gl)
-    d ..CreateClass(gl,isBinClass)
+    d ..CreateClass(gl,isBinClass,ArrBinFile)
+    
+    ; Принудительно меняем текст в классах
+    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")
+   
     zw @gl
     k @gl
     w "OK"
@@ -57,16 +115,21 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
         d ..GetDir2(name,PathApp,PacName,gl)
      }else{
         ; w !,name  
+        s Sname=$REPLACE(name,PathApp,"")
+        s LongPath=$e(Sname,1,$l(Sname)-$l( $p(Sname,"\",$l(Sname,"\")  ) ))
+        s NameOnly=$e(Sname,$l(LongPath),$l(Sname))
+        
+        
         s ClasName=$REPLACE(name,PathApp,"")
         s ClasName=$REPLACE( ClasName," ","")
         continue:ClasName=""
-        s ClasName=$REPLACE(ClasName,"-","")
-        s ClasName=$REPLACE(ClasName,"_","")
+        s ClasName=$REPLACE(ClasName,"-",".")
+        s ClasName=$REPLACE(ClasName,"_",".")
         if $l(name,".")>1 {
           s rashirenie=$p(name,".",$l(name,"."))
           s ClasName=$e(ClasName,1,$l(ClasName)-$l(rashirenie)-1)
         }
-        s ClasName=$REPLACE(ClasName,".","")
+        ; s ClasName=$REPLACE(ClasName,".","")
         s url=$Replace(name,PathApp,"")
         s url=$Replace(url,"\","/")
         
@@ -74,7 +137,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
         s ClasName=$Replace(ClasName,"\",".")
         s ClasName=PacName_"."_ClasName
         s ClasNameDst=ClasName_".cls"
-        s @gl@(ClasName)=$lb(name,url,ClasNameDst)
+        s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
+        for i=1:1:$l(Sname,"/"){
+	       
+        }
      }
   }
 ]]></Implementation>
@@ -84,7 +150,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
 <Description>
 создание классов из списока фалов помещенных ранее в глобалы</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>gl,isBinClass=0</FormalSpec>
+<FormalSpec>gl,isBinClass=0,ArrBinFile=""</FormalSpec>
 <Implementation><![CDATA[
       s ClassName=""
       for  {
@@ -93,6 +159,9 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
          s FileName=$lg(@gl@(ClassName),1)
          s JsName=$lg(@gl@(ClassName),2)
          s CacheName=$lg(@gl@(ClassName),3)
+         s LongPath=$lg(@gl@(ClassName),4)
+         s NameOnly=$lg(@gl@(ClassName),5)
+         
         s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
         s Typ=..ContentTypeLocal(FileName)
         w !,ClassName,!
@@ -190,16 +259,18 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
       s:rashirenie="htm" isBinDo=0
       s:rashirenie="html" isBinDo=0
       s:rashirenie="css" isBinDo=0
-      if rashirenie="css" ,$e(FileName,$l(FileName)-$l(".min.css"),$l(FileName))=".min.css"
-      {
-         s isBinDo=1
-      }
       s:rashirenie="js" isBinDo=0
-      if rashirenie="js" ,$e(FileName,$l(FileName)-$l(".min.js"),$l(FileName))=".min.js"
-      {
-         s isBinDo=1
+      
+      if (ArrBinFile'=""){
+        s subInd=""
+        for {
+	        s subInd=$o(ArrBinFile(subInd))
+	        q:subInd=""
+	        if $zcvt(subInd,"L")=$zcvt(NameOnly,"L"){
+		        s isBinDo=1
+	        }
+        }
       }
-      s:file.Size>500000 isBinDo=1
       
       if isBinDo=1
       { 
@@ -288,6 +359,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
                     if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
                        s CacheName3=$lg(@gl@(ClassName3),3)
                        s html=$REPLACE(html,PathAll,CacheName3)
+                       s html=$REPLACE(html,"../","")
                        q
                    }
                  }
@@ -304,7 +376,6 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
                  s PathSearch=$replace(PathSearch,"/",".")
                  s ClassName3=""
                  for  {
-	                s $ZTRAP="err2"
                     s ClassName3=$o(@gl@(ClassName3))
                     q:ClassName3=""
                     s ^deb(PathSearch,ClassName3)=PathSearch
@@ -312,7 +383,6 @@ do ##class(Developper.UtilTools.ClassFromDir).run("Three.Doc","C:\AppServ\Editor
                        s CacheName3=$lg(@gl@(ClassName3),3)
                        s html=$REPLACE(html,PathAll,CacheName3)
                        q
-err2                       
                    }
                  }
               }
@@ -326,7 +396,6 @@ err2
                  s PathSearch=$replace(path,"/",".")
                  s ClassName3=""
                  for  {
-	                s $ZTRAP="err3"
                     s ClassName3=$o(@gl@(ClassName3))
                     q:ClassName3=""
                     if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
@@ -334,28 +403,6 @@ err2
                        s html=$REPLACE(html,PathAll,CacheName3)
                        q
                    }
-err3                   
-                 }
-              }
-               // замена неполный путь внутри пакета  Стили
-              if isChange=0,rashirenie="css",$l(html,"url")>1  {
-                 s PosStart=$l($p(html,"url(",1))+$l("url(")+1
-                 s Symb=$e(html,PosStart,PosStart)
-                 s Tmphtml=$e(html,PosStart+1,$l(html))
-                 s PathAll=$p(Tmphtml,Symb,1)
-                 s path=$e(PathAll,1,$l(PathAll)-$l($p(PathAll,".",$l(PathAll,".")))-1)
-                 s PathSearch=$replace(path,"/",".")
-                 s ClassName3=""
-                 for  {
-	                s $ZTRAP="err4"
-                    s ClassName3=$o(@gl@(ClassName3))
-                    q:ClassName3=""
-                    if $l(ClassName3,PathSearch)=2,$l($p(ClassName3,PathSearch,2))=0 {
-                       s CacheName3=$lg(@gl@(ClassName3),3)
-                       s html=$REPLACE(html,PathAll,CacheName3)
-                       q
-                   }
-err4                   
                  }
               }
               
@@ -378,7 +425,6 @@ err4
               s html=$replace(html,"<br>","<br />")
               s ClassName2=""
               for  {
-                  s $ZTRAP="err"
                   s ClassName2=$o(@gl@(ClassName2))
                   q:ClassName2=""
                   s FileName2=$lg(@gl@(ClassName2),1)
@@ -399,7 +445,6 @@ err4
 	                  }
 	                  s isAddHTMLCacheLib=1
                   }
-err                  
                }
                // s html=$ZCVT(html,"o","XML")
                // s html=$REPLACE(html,"&","&amp;")
