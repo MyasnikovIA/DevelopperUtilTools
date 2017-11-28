@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 14:04:36">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 14:19:16">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
@@ -7,7 +7,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-ma
 
   do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64615,50672.048742</TimeChanged>
+<TimeChanged>64615,51544.709435</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -26,8 +26,8 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
     ; s:PacName="" PacName="HTML.ThreeJSDev.editor"
     ; s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\editor\"
      
-     s:PacName="" PacName="HTML.jQueryEasyUI"
-     s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
+     s:PacName="" PacName="HTML.ThreeJS"
+     s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\"
      
      ; создаем список файлов, которые помещаем в класс как бинарные файлы base64
      s gl2="^IsklBIN"_$JOB
@@ -191,7 +191,13 @@ EnyErr
         s ClasName=$Replace(ClasName,"\",".")
         s ClasName=PacName_"."_ClasName
         s ClasNameDst=ClasName_".cls"
-        s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
+        if '$d(@gl@(ClasName)) {
+           s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
+        }else{
+	        s ClasName=ClasName_$ZCVT(rashirenie,"U")
+	        s ClasNameDst=ClasName_".cls"
+            s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
+        }
         for i=1:1:$l(Sname,"/"){
 	       
         }
@@ -318,7 +324,7 @@ EnyErr
       s MethodDestroy.ClassMethod=1
       s file=##class(%FileCharacterStream).%New()
       s file.Filename=FileName
-      s ListRas=".html,.htm,.js,.css,.txt,.scss,.json"
+      s ListRas=".html,.htm,.js,.css,.txt,.scss,.json,.md"
       s ind=0
       s isBinDo=0
       s:$l(ListRas,rashirenie)=1 isBinDo=1
