@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-11-28 16:09:37">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-12-04 05:58:31">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
@@ -7,7 +7,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-ma
 
   do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64615,57763.720783</TimeChanged>
+<TimeChanged>64620,76206.099483</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -22,20 +22,35 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PathApp="",PacName="",isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
-	
+    
+     s:PacName="" PacName="Demo.ThreeJS"
+     s:PathApp="" PathApp="C:\AppServ\three.js-dev\11111\"
+    
+   ;  s:PacName="" PacName="HTML.jQueryEasyUI.plugins.Portal"
+   ;  s:PathApp="" PathApp="C:\AppServ\jquery-easyui-portal\"
+    
+    
+   ;  s:PacName="" PacName="HTML.jQueryEasyUI.themes.icons.SMWrap"
+   ;  s:PathApp="" PathApp="C:\AppServ\IMG\classeditor\"
+    
+    
     ; s:PacName="" PacName="HTML.ThreeJSDev.editor"
     ; s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\editor\"
      
-     s:PacName="" PacName="HTML.ThreeJS"
-     s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\"
+    ; s:PacName="" PacName="ThreeJS.DOC"
+    ; s:PathApp="" PathApp="C:\AppServ\Editor\DOC\"
+
+    ; s:PacName="" PacName="HTML.jQueryEasyUI"
+    ; s:PathApp="" PathApp="C:\AppServ\jquery-easyui-1.5.3\"
+     
+   ; s:PacName="" PacName="HTML.ThreeJS"
+   ; s:PathApp="" PathApp="C:\AppServ\three.js-dev\three.js-dev\"
      
    ;  s:PacName="" PacName="DELETE.BABYLON"
    ;  s:PathApp="" PathApp="C:\AppServ\BabylonJS___RTS\"
      
-     
-     
      ; создаем список файлов, которые помещаем в класс как бинарные файлы base64
-     s gl2="^IsklBIN"_$JOB
+     s gl2="^mtempIsklBIN"_$JOB
      s @gl2@("jquery.easyui.min.js")=1
      s @gl2@("jquery.easyui.mobile.js")=1
      s @gl2@("jquery.min.js")=1
@@ -45,9 +60,10 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
      s @gl2@("three.module.js")=1
      s @gl2@("babylon.min.js")=1
      s @gl2@("babylon.js")=1
-     
-     
-     
+     s @gl2@("jquery-ui.min.js")=1
+     s @gl2@("highlight.min.js")=1
+     s @gl2@("module.js")=1
+          
     // создаем список всех файлов с подкаталогами 
     s Dir=$zse(PathApp_"*")
     s gl="^DevelopperUtilToolsClassFromDir"_$JOB
@@ -55,16 +71,18 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
     d ..GetDir2(Dir,PathApp,PacName,gl)
     
     // создаем классы
-    d ..CreateClass(gl,isBinClass)
+    d ..CreateClass(gl,gl2,isBinClass)
     
     ; Принудительно меняем текст в классах
-    ; do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='Demo.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")
+    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT(PacName,"<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")
+    do ##class(Developper.UtilTools.ClassFromDir).replaceTXT(PacName,"<script type=""text/javascript"" src=""HTML.jQueryEasyUI.jquery.easyui.min.cls""></script>","<script type=""text/javascript"" src=""HTML.jQueryEasyUI.jquery.easyui.min.cls""></script>"_$c(13,10,9)_"<script type=""text/javascript"" src=""HTML.jQueryEasyUI.locale.easyui.lang.ru.cls""></script>")
+   
    
     ; zw @gl
     k @gl
-    k @gl2
+    ; k @gl2
     w !,"-- OK --"
-    do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()
+    do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte(PacName)
     w !,"-- все закончено --",!
     q
 ]]></Implementation>
@@ -73,8 +91,9 @@ do ##class(Developper.UtilTools.ClassFromDir).run("HTML.ThreeJSDev","C:\AppServ\
 <Method name="replaceClassnameAfte">
 <Description>
 окончательная замена имени файлов на имя класса
-do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
+do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte("TreeJSExsample")</Description>
 <ClassMethod>1</ClassMethod>
+<FormalSpec>PacName=""</FormalSpec>
 <Implementation><![CDATA[
    s gl="^oddDEF"
    s ClassName=""
@@ -83,23 +102,28 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Descriptio
       q:ClassName=""
       continue:$l(ClassName,"%")>1
       continue:$l(ClassName,"Developper.UtilTools")>1
+      if $l(PacName)>0,$l(ClassName,PacName)=1 continue
+      
       ; s ClassName="HTML.jQueryEasyUI.demo.combobox.combobox.data1"
       if $d(@gl@(ClassName,"p","NameOnly",22)),$d( @gl@(ClassName,"p","DstName",22)) {
-          s NameOnly=@gl@(ClassName,"p","NameOnly",22)
-          s DstName=@gl@(ClassName,"p","DstName",22)
-          do ##class(Developper.UtilTools.ClassFromDir).replaceTXT(NameOnly,DstName)
+          s NameOnly=@gl@(ClassName,"p","NameOnly",22) ; получаем имя файла, без пути к нему
+          s DstName=@gl@(ClassName,"p","DstName",22)   ; получаем имя класса в который помещен файл
+          ; пробегаем по всем класса в области имен и меняем имя фала на имя класса
+          do ##class(Developper.UtilTools.ClassFromDir).replaceTXT(PacName,NameOnly,DstName) 
           w !,"Обработан:"_ClassName
        }
    }
-   w "!!OK!!"
+   w !,"!!OK!!",!
 ]]></Implementation>
 </Method>
 
 <Method name="replaceTXT">
 <Description><![CDATA[
-do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")]]></Description>
+
+<br>Класс предназначен для пробегаем по всем класса, в области имен, и замене исходный текст "Src" на "Dst"
+<br>do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>Src="",Dst=""</FormalSpec>
+<FormalSpec>PacName="",Src="",Dst=""</FormalSpec>
 <Implementation><![CDATA[
    s gl="^oddDEF"
    s ClassName=""
@@ -108,78 +132,121 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet
       q:ClassName=""
       continue:$l(ClassName,"%")>1
       continue:$l(ClassName,"Developper.UtilTools")>1
+      if $l(PacName)>0,$l(ClassName,PacName)=1 continue
+      
       ; s ClassName="HTML.jQueryEasyUI.demo.demo"
       s block="x"
       s tt=##class(%Dictionary.ClassDefinition).%OpenId(ClassName)
       s isSaveClass=0
       if $d(@gl@(ClassName,block)){
-	    s nameX=""
-	    for  {
-		    s nameX=$o(@gl@(ClassName,block,nameX))
-	        q:nameX=""
-	        s codBlock=21
-	        if $d(@gl@(ClassName,block,nameX,codBlock)){
+        s nameX=""
+        for  {
+            s nameX=$o(@gl@(ClassName,block,nameX))
+            q:nameX=""
+            s codBlock=21
+            if $d(@gl@(ClassName,block,nameX,codBlock)){
               s $ZTRAP="EnyErr"
-	          s line=""
-	          for {
-	              s line=$o(@gl@(ClassName,block,nameX,codBlock,line))
-	              q:line=""
-	              s code=@gl@(ClassName,block,nameX,codBlock,line)
-	              if $l(code,Src)>1 {
-		             s isSaveClass=1
-	                 s code=$REPLACE(code,Src,Dst)
-  	                 s @gl@(ClassName,block,nameX,codBlock,line)=code
-	              }
-	           }
-EnyErr	           
-	        }
-	     }
+              s line=""
+              for {
+                  s line=$o(@gl@(ClassName,block,nameX,codBlock,line))
+                  q:line=""
+                  s code=@gl@(ClassName,block,nameX,codBlock,line)
+                  if $l(code,Src)>1 {
+                     s isSaveClass=1
+                     s code=$REPLACE(code,Src,Dst)
+                       s @gl@(ClassName,block,nameX,codBlock,line)=code
+                  }
+               }
+EnyErr               
+            }
+         }
       }
-      
-      ; ^oddDEF("DELETE.BABYLON.RtsCamera","m","JSContet",30,574)="
-
+       ; ^oddDEF("DELETE.BABYLON.RtsCamera","m","JSContet",30,574)="
        s block="m"
        if $d(@gl@(ClassName,block)){
-	   s nameM=""
-	    for  {
-		    s nameM=$o(@gl@(ClassName,block,nameM))
-	        q:nameM=""
-	        s codBlock=30
-	        if $d(@gl@(ClassName,block,nameM,codBlock)){
+       s nameM=""
+        for  {
+            s nameM=$o(@gl@(ClassName,block,nameM))
+            q:nameM=""
+            s codBlock=30
+            if $d(@gl@(ClassName,block,nameM,codBlock)){
               s $ZTRAP="EnyErr2"
-	          s line=""
-	          for {
-	              s line=$o(@gl@(ClassName,block,nameM,codBlock,line))
-	              q:line=""
-	              s code=@gl@(ClassName,block,nameM,codBlock,line)
-	              if $l(code,Src)>1 {
-		             s isSaveClass=1
-	                 s code=$REPLACE(code,Src,Dst)
-  	                 s @gl@(ClassName,block,nameM,codBlock,line)=code
-	              }
-	           }
-EnyErr2	           
-	        }
-	     }
+              s line=""
+              for {
+                  s line=$o(@gl@(ClassName,block,nameM,codBlock,line))
+                  q:line=""
+                  s code=@gl@(ClassName,block,nameM,codBlock,line)
+                  if $l(code,Src)>1 {
+                     s isSaveClass=1
+                     s code=$REPLACE(code,Src,Dst)
+                     s @gl@(ClassName,block,nameM,codBlock,line)=code
+                  }
+               }
+EnyErr2               
+            }
+         }
       }
-      
-      
       if isSaveClass=1 {
          s tt.Description=tt.Description_" "
+         d tt.%Save()
+         s tt.Description=$e(tt.Description,1,$l(tt.Description)-1)
          w tt.%Save(),! 
          Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
          w !,ClassName
       }
-   }	  
+   }      
    q
 ]]></Implementation>
 </Method>
 
 <Method name="ExportDir">
-<Description>
-Выгрузка классов в папку</Description>
+<Description><![CDATA[
+Выгрузка классов в папку
+<br>do ##class(Developper.UtilTools.ClassFromDir).ExportDir("Three","c:\AppSrv\ThreeJS)]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PacName="",DirName=""</FormalSpec>
+<Implementation><![CDATA[
+   s gl="^oddDEF"
+   s ClassName=""
+   for {
+      s ClassName=$o(@gl@(ClassName))
+      q:ClassName=""
+      continue:$l(ClassName,"%")>1
+      continue:$l(ClassName,"Developper.UtilTools")>1
+      if $l(ClassName,PacName)=1 continue
+      continue:'$d( @gl@(ClassName,"p","DstName"    ,22 ))
+      continue:'$d( @gl@(ClassName,"p","FileName"   ,22 ))
+      continue:'$d( @gl@(ClassName,"p","PathOnly"   ,22 ))
+      continue:'$d( @gl@(ClassName,"p","Rashirenie" ,22 ))
+      continue:'$d( @gl@(ClassName,"p","SrcName"    ,22 ))
+      continue:'$d( @gl@(ClassName,"p","isBinFile"  ,22 ))
+      continue:'$d( @gl@(ClassName,"p","PathApp"    ,22 ))
+      s DstName   = @gl@(ClassName,"p","DstName"    ,22 )
+      s FileName  = @gl@(ClassName,"p","FileName"   ,22 )
+      s PathOnly  = @gl@(ClassName,"p","PathOnly"   ,22 )
+      s Rashirenie= @gl@(ClassName,"p","Rashirenie" ,22 )
+      s SrcName   = @gl@(ClassName,"p","SrcName"    ,22 )
+      s isBinFile = @gl@(ClassName,"p","isBinFile"  ,22 )
+      s PathApp   = @gl@(ClassName,"p","PathApp"    ,22 )
+      ; ^oddDEF("ThreeJSDev.bower","p","DstName",22)="ThreeJSDev.bower.cls"
+      ; ^oddDEF("ThreeJSDev.bower","p","FileName",22)="E:\AppSrv\three.js-dev\three.js-dev\bower.json"
+      ; ^oddDEF("ThreeJSDev.bower","p","PathOnly",22)="E:\AppSrv\three.js-dev\three.js-dev\"
+      ; ^oddDEF("ThreeJSDev.bower","p","Rashirenie",22)="json"
+      ; ^oddDEF("ThreeJSDev.bower","p","SrcName",22)="bower.json"
+      ; Получаем имя создаваемого файла
+      s SaveFileName=$replace(FileName,PathApp,DirName)
+      ; Необходимо дописать опредиление бинарный файл или нет 
+      if isBinFile=1 {
+	     ; Выгружаем бинарный файл в "SaveFileName"
+	         
+      } else {
+	     ; в зависимости от расширения определеяем метод в котором находится исходный код страницы
+	  
+	      
+      }
+
+   }
+]]></Implementation>
 </Method>
 
 <Method name="GetDir2">
@@ -204,6 +271,7 @@ EnyErr2
         s Sname=$REPLACE(name,PathApp,"")
         s LongPath=$e(Sname,1,$l(Sname)-$l( $p(Sname,"\",$l(Sname,"\")  ) ))
         s NameOnly=$e(Sname,$l(LongPath)+1,$l(Sname))
+        s PathOnly=$e(name,1,$l(name)-$l(NameOnly))
         
         s ClasName=$REPLACE(name,PathApp,"")
         s ClasName=$REPLACE( ClasName," ","")
@@ -214,35 +282,53 @@ EnyErr2
           s rashirenie=$p(name,".",$l(name,"."))
           s ClasName=$e(ClasName,1,$l(ClasName)-$l(rashirenie)-1)
         }
-        for ind=0:1:9 {  s ClasName=$REPLACE(ClasName,"."_ind,".v"_ind )  }
-          
-        s oneSymb=$e(ClasName,1,1) 
-        if oneSymb="." {  s ClasName=$e(ClasName,2,$l(ClasName))   }
-        for ind=0:1:9 {  
-            if oneSymb=ind {s ClasName=$e(ClasName,2,$l(ClasName))   }
-        }
+        
+        ; for ind=0:1:9 {  s ClasName=$REPLACE(ClasName,"."_ind,".v"_ind )  }
+        ; s oneSymb=$e(ClasName,1,1) 
+        ; if oneSymb="." {  s ClasName=$e(ClasName,2,$l(ClasName))   }
+        ; for ind=0:1:9 {  
+        ;     if oneSymb=ind {s ClasName=$e(ClasName,2,$l(ClasName))   }
+        ; }
         
         
         ; s ClasName=$REPLACE(ClasName,".","")
         s url=$Replace(name,PathApp,"")
         s url=$Replace(url,"\","/")
-        
         s ClasName=$Replace(ClasName,PathApp,"")
         s ClasName=$Replace(ClasName,"\",".")
         s ClasName=PacName_"."_ClasName
-        s ClasNameDst=ClasName_".cls"
-        if '$d(@gl@(ClasName)) {
-           s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
-        }else{
-	        s ClasName=ClasName_$ZCVT(rashirenie,"U")
-	        s ClasNameDst=ClasName_".cls"
-            s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly)
+        
+        s ClasNameDst=""
+        // если имя пакета начинается с цифры, тогда добавляем к имени пакета букву "n"
+        for ind=1:1:$l(ClasName,"."){
+	        s:ind'=1 ClasNameDst=ClasNameDst_"."
+	        s frag=$p(ClasName,".",ind)
+	        if $tr($e(frag,1,1),"1234567890")="" s frag="n"_frag
+	        s ClasNameDst=ClasNameDst_frag
         }
-        for i=1:1:$l(Sname,"/"){
-	       
+        s ClasName=ClasNameDst
+        s ClasNameDst=ClasNameDst_".cls"
+        if '$d(@gl@(ClasName)) {
+             s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly,PathOnly,PathApp)
+        }else{
+            s ClasName=ClasName_$ZCVT(rashirenie,"U")
+            s ClasNameDst=ClasName_".cls"
+            s @gl@(ClasName)=$lb(name,url,ClasNameDst,LongPath,NameOnly,PathOnly,PathApp)
         }
      }
   }
+]]></Implementation>
+</Method>
+
+<Method name="addParam">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>tt,nam,val=""</FormalSpec>
+<Implementation><![CDATA[
+   s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_"."_nam)
+   s param.Name=nam  
+   s param.Default=val
+   d param.%Save()
+   d tt.Parameters.Insert(param)
 ]]></Implementation>
 </Method>
 
@@ -250,7 +336,7 @@ EnyErr2
 <Description>
 создание классов из списока фалов помещенных ранее в глобалы</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>gl,isBinClass=0</FormalSpec>
+<FormalSpec>gl,gl2,isBinClass=0</FormalSpec>
 <Implementation><![CDATA[
       s ClassName=""
       for  {
@@ -261,6 +347,8 @@ EnyErr2
          s CacheName=$lg(@gl@(ClassName),3)
          s LongPath=$lg(@gl@(ClassName),4)
          s NameOnly=$lg(@gl@(ClassName),5)
+         s PathOnly=$lg(@gl@(ClassName),6)
+         s PathApp=$lg(@gl@(ClassName),7)
          
         s rashirenie=$ZCVT($p(FileName ,".", $l(FileName,".")),"L")
         s Typ=..ContentTypeLocal(FileName)
@@ -315,45 +403,15 @@ EnyErr2
     d tt.Methods.Insert(MethodHead)
     s fl=tt.%Save()
 
-      // имя  источника файла     
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".FileName")
-      s param.Name="FileName"    
-      s param.Default=FileName
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-      
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".SrcName")
-      s param.Name="SrcName"    
-      s param.Default=JsName
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".NameOnly")
-      s param.Name="NameOnly"    
-      s param.Default=NameOnly
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".LongPath")
-      s param.Name="LongPath"    
-      s param.Default=LongPath
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-
-
-
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".DstName")
-      s param.Name="DstName"    
-      s param.Default=CacheName
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-     
-      s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".Rashirenie")
-      s param.Name="Rashirenie"    
-      s param.Default=rashirenie
-      d param.%Save()
-      d tt.Parameters.Insert(param)
-      
+      // имя  источника файла  
+      d ..addParam(.tt,"FileName",FileName)   
+      d ..addParam(.tt,"SrcName",JsName)   
+      d ..addParam(.tt,"NameOnly",NameOnly)   
+      d ..addParam(.tt,"PathOnly",PathOnly)   
+      d ..addParam(.tt,"PathApp",PathApp)   
+      d ..addParam(.tt,"LongPath",LongPath)   
+      d ..addParam(.tt,"DstName",CacheName)   
+      d ..addParam(.tt,"Rashirenie",rashirenie)   
       
       s MethodName="OnPage"
       s MethodDestroy=##class(%Dictionary.MethodDefinition).%New(ClassName_"."_MethodName)
@@ -377,48 +435,31 @@ EnyErr2
       s:rashirenie="css" isBinDo=0
       s:rashirenie="js" isBinDo=0
       
-      
-      
-      s gl2="^IsklBIN"_$JOB
       s indS=""
-	  for  {
-		  s indS=$o(@gl2@(indS))
-	      q:indS=""
-		 if $ZCVT(NameOnly,"L")=$ZCVT(indS,"L"){ 
-	        s isBinDo=1
-	     }
+      for  {
+         s indS=$o(@gl2@(indS))
+         q:indS=""
+         if $ZCVT(NameOnly,"L")=".min."{ 
+            s isBinDo=1
+         }
+         if $ZCVT(NameOnly,"L")=$ZCVT(indS,"L"){ 
+            s isBinDo=1
+         }
      }
-      
-	    ;     s subInd="jquery.min.js"
-	    ;     if $zcvt(subInd,"L")=$zcvt(NameOnly,"L"){
-        ;	        s isBinDo=1
-	    ;    }
-	    
       // }
       
       if isBinDo=1
       { 
-            s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
-            s param.Name="isBinFile"    
-            s param.Default=1
-            d param.%Save()
-            d tt.Parameters.Insert(param)
-
+          d ..addParam(.tt,"isBinFile",1)   
           f  {
              q:file.AtEnd 
              s ind=ind+1
-        
-            ;  s html=$system.Encryption.Base64Encode(file.Read(100))
+             ;  s html=$system.Encryption.Base64Encode(file.Read(100))
              s html=$system.Encryption.Base64Encode(file.Read(32000))
              ; s html=$system.Encryption.Base64Encode(file.ReadLine())
              ; d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode("""_html_""")    ")
                s paramName="Frag"_ind
-               s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_"."_paramName)
-               s param.Name=paramName    
-               s val=html
-               s param.Default=val
-               d param.%Save()
-               d tt.Parameters.Insert(param)
+               d ..addParam(.tt,paramName,html)   
                d tt.%Save()
                s param=""
                d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode(..#"_paramName_")")
@@ -434,14 +475,8 @@ EnyErr2
                */
             }
       }else{
-               s param=##class(%Dictionary.ParameterDefinition).%New(tt.Name_".isBinFile")
-               s param.Name="isBinFile"    
-               s param.Default=0
-               d param.%Save()
-               d tt.Parameters.Insert(param)
-
-	      if rashirenie="js" {
-               
+          d ..addParam(.tt,"isBinFile",0)   
+          if rashirenie="js" {
                s paramName="JSContet"
                s param1=##class(%Dictionary.MethodDefinition).%New(tt.Name_"."_paramName)
                s param1.Name=paramName
@@ -463,12 +498,10 @@ EnyErr2
                d MethodDestroy.Implementation.WriteLine("        d ..ExecFrag(^oddDEF(ParentClassName1,""m"",MethodName,30,ind),""/*("","")*/"")  ")
                d MethodDestroy.Implementation.WriteLine("        w $c(13,10)  ")
                d MethodDestroy.Implementation.WriteLine("     }               ")
-	      }else{
-
+          }else{
                s paramName="XDataContet"
                s param1=##class(%Dictionary.XDataDefinition).%New(tt.Name_"."_paramName)
                s param1.Name=paramName
-           
                if rashirenie="scss"{
                  d param1.Data.Write("<style type='text/css'>")
                }elseif rashirenie="css"{
@@ -478,8 +511,7 @@ EnyErr2
                }else{
                   d param1.Data.Write("<data>")
                }
-           
-               f  {
+               for  {
                   q:file.AtEnd 
                   s ind=ind+1 
                   s html=file.ReadLine()
@@ -500,17 +532,18 @@ EnyErr2
                d tt.XDatas.Insert(param1)
                w tt.%Save(),!
                d MethodDestroy.Implementation.WriteLine("     d ..DrawXdata("""_paramName_""")")
-	      }
+          }
+         ; копируем метод
+         d ..CopyMethod(##this,"DrawXdata",tt,"DrawXdata")
       }    
       d MethodDestroy.Implementation.WriteLine("     Quit $$$OK ")
       s MethodDestroy.Internal=0
       d MethodDestroy.%Save()
       d tt.Methods.Insert(MethodDestroy)
       w tt.%Save(),!
-      ; копируем методы
+        ; копируем метод
+        d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
       ; d ..CopyMethod(##this,"ContentTypeLocal",tt,"ContentType")
-      d ..CopyMethod(##this,"ExecFrag",tt,"ExecFrag")
-      d ..CopyMethod(##this,"DrawXdata",tt,"DrawXdata")
       Do $system.OBJ.Compile(ClassName,"cuk /checkuptodate=expandedonly")
    }
 ]]></Implementation>
@@ -521,13 +554,11 @@ EnyErr2
 <FormalSpec>html,gl</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	
-                s isAddHTMLCacheLib=0
-               if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
-               if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
- 
-                 
-                  s html=$zcvt(html,"I","UTF8")
+    
+                  s isAddHTMLCacheLib=0
+                  if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+                  if $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=0  s isAddHTMLCacheLib=-1
+                  try { s html=$zcvt(html,"I","UTF8") } CATCH {}
                   s html=$replace(html,"<br>","<br />")
                   s isChange=0
                   // замена относительного пути на класс, если он есть в списке
@@ -603,7 +634,7 @@ EnyErr2
                        s html=$replace(html,">","/>")
                     }
                   }
-	              if $l(html,"<link ")>1,$l(html,"href")>1  {
+                  if $l(html,"<link ")>1,$l(html,"href")>1  {
                     if $l(html,"/>")=1,$l(html,">")=2 {
                        s html=$replace(html,">","/>")
                     }
@@ -622,12 +653,12 @@ EnyErr2
                       }
                       /// добавление системной библиотеки, если есть в БД  HTML.CacheLib или %ZHTML.CacheLib
                       ;  if ( ($l(html,"<script")>1) || ($l(html,"<link")>1)) , isAddHTMLCacheLib=0 {
-	                  ;      if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
-	                  ;        s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	                  ;      }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
-	                  ;        s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
-	                  ;      }
-	                  ;      s isAddHTMLCacheLib=1
+                      ;      if $zObjClassMethod("%CompiledClass","%ExistsId","HTML.CacheLib")=1 {
+                      ;        s html="<script src='HTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+                      ;      }elseif $zObjClassMethod("%CompiledClass","%ExistsId","%ZHTML.CacheLib")=1 {
+                      ;        s html="<script src='%25ZHTML.CacheLib.cls' type='text/javascript' ></script>"_$c(10)_html
+                      ;      }
+                      ;      s isAddHTMLCacheLib=1
                       ;  }
                    }
                    // s html=$ZCVT(html,"o","XML")
@@ -743,12 +774,12 @@ EnyErr2
      if '$isobject(ClassNameNew){
        s ttNew=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameNew)
      }else{
-	   s ttNew=ClassNameNew
+       s ttNew=ClassNameNew
      }
      if '$isobject(ClassNameOld){
        s ttOld=##class(%Dictionary.ClassDefinition).%OpenId(ClassNameOld)
      }else{
-	   s ttOld=ClassNameOld
+       s ttOld=ClassNameOld
      }
      ; Удалчем классметод в целевом классе
      for i=1:1:ttNew.Methods.Count() d
@@ -787,6 +818,131 @@ errorCopyMeth
    }else{                  s ClassName=$p(Name,":",1),XdataName=$p(Name,":",2)  }
    s gl="^oddDEF("""_ClassName_""",""x"","""_XdataName_""",21)"  
    s FragOnPageInd=""  f {  s FragOnPageInd=$o(@gl@(FragOnPageInd))  q:FragOnPageInd=""  continue:FragOnPageInd=1  q:FragOnPageInd=@gl      d ..ExecFrag(@gl@(FragOnPageInd),"/*(",")*/")     w $c(13,10)  }
+]]></Implementation>
+</Method>
+
+<Method name="CopyPacket">
+<Description>
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).CopyPacket("HTML.js.Three","DELETE")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>srcPack="",dstPack=""</FormalSpec>
+<Implementation><![CDATA[
+   
+   s gl="^oddDEF"
+   s ClassName=""
+   for {
+      s ClassName=$o(@gl@(ClassName))
+      q:ClassName=""
+      continue:$l(ClassName,"%")>1
+      continue:$l($e(ClassName,1,$l(srcPack)),srcPack)=1
+      s ClassNameDst=dstPack_$e(ClassName,$l(srcPack)+1,$l(ClassName))
+      d ..CopyClass(ClassName,ClassNameDst)
+      Do $system.OBJ.Compile(ClassNameDst,"cuk /checkuptodate=expandedonly")
+   }
+]]></Implementation>
+</Method>
+
+<Method name="RenamePacket">
+<Description>
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.JQuery","DELETE")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("DELETE","HTML.jquery")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("DELETE","HTML.WebGL.Three")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.css.WebGL","HTML.WebGL.x3dom.css")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.js.WebGL.x3dom","HTML.WebGL.x3dom.js")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.js.WebGL.BabylonJS","HTML.WebGL.BabylonJS")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.css.jquery.v112","HTML.jquery.v112.css")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.js.bootstrap.v112","HTML.bootstrap.v112.js")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.css.bootstrap.v112","HTML.bootstrap.v112.css")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.css.vuejs.v216","HTML.vuejs.v216.css")
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("HTML.js.angularjs.v156","HTML.angularjs.v156.js")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>srcPack="",dstPack=""</FormalSpec>
+<Implementation><![CDATA[
+   s gl="^oddDEF"
+   s ClassName=""
+   for {
+      s ClassName=$o(@gl@(ClassName))
+      q:ClassName=""
+      continue:$l(ClassName,"%")>1
+      continue:$l($e(ClassName,1,$l(srcPack)),srcPack)=1
+      s ClassNameDst=dstPack_$e(ClassName,$l(srcPack)+1,$l(ClassName))
+      d ..CopyClass(ClassName,ClassNameDst)
+      Do $system.OBJ.Compile(ClassNameDst,"cuk /checkuptodate=expandedonly")
+      Do:$zObjClassMethod("%CompiledClass","%ExistsId",ClassName)=1 $system.OBJ.Delete(ClassName) 
+   }
+]]></Implementation>
+</Method>
+
+<Method name="CopyClass">
+<Description>
+ zn "three"  do ##class(Developper.UtilTools.ClassFromDir).CopyClass("HTML.css.WebGL.x3dom.x3dom","DELETE.dom")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>oldClassName="HTML.css.WebGL.x3dom.x3dom",NameClassSpaceNew="DELETE.dom"</FormalSpec>
+<Implementation><![CDATA[
+           q:oldClassName=""
+           q:NameClassSpaceNew=""
+	       s ttOld=##class(%Dictionary.ClassDefinition).%OpenId(oldClassName)
+           // Копируем весь класс
+           #dim ttNew as %Dictionary.ClassDefinition=ttOld.%ConstructClone()
+           Do:$zObjClassMethod("%CompiledClass","%ExistsId",NameClassSpaceNew)=1 $system.OBJ.Delete(NameClassSpaceNew) 
+           if $zObjClassMethod("%CompiledClass","%ExistsId",NameClassSpaceNew)=1 {
+	          s str=NameClassSpaceNew
+	          s str=$tr(str,$tr(str,"1234567890",""),"")
+	          s:$l(str)=0 str=0
+	          s str=str+1
+	          s NameClassSpaceNew=NameClassSpaceNew_str
+           }
+           s ttNew.Name=NameClassSpaceNew
+           for i=1:1:ttNew.Parameters.Count() d
+           .   s newParam=ttNew.Parameters.GetAt(i).%ConstructClone()
+           .   if ttNew.Parameters.GetAt(i).Name="DstName" {
+	       .       s ttNew.Parameters.GetAt(i).Default=NameClassSpaceNew_".cls"
+	       .       d ttNew.Parameters.GetAt(i).%Save()
+           .   }
+           d ttNew.%Save()
+          
+         /*
+           for i=1:1:ttOld.Methods.Count() d
+           .   s obj=ttOld.Methods.GetAt(i).%ConstructClone()
+           .   d ttNew.Methods.Insert(obj)
+           .   ; d ttNew.Methods.%Save()
+           
+           for i=1:1:ttOld.Queries.Count() d
+           .   d ttNew.Queries.Insert( ttOld.Queries.GetAt(i).%ConstructClone())
+           .   ; d ttNew.Queries.%Save()
+          
+           for i=1:1:ttOld.Indices.Count() d
+           .   d ttNew.Indices.Insert( ttOld.Indices.GetAt(i).%ConstructClone())
+           .   ; d ttNew.Indices.%Save()
+          
+           for i=1:1:ttOld.Triggers.Count() d
+           .   d ttNew.Triggers.Insert( ttOld.Triggers.GetAt(i).%ConstructClone())
+           .   ; d ttNew.Triggers.%Save()
+          
+           for i=1:1:ttOld.XDatas.Count() d
+           .   d ttNew.XDatas.Insert( ttOld.XDatas.GetAt(i).%ConstructClone())
+           .   ; d ttNew.XDatas.%Save()
+          
+           for i=1:1:ttOld.Parameters.Count() d
+           .   s newParam=ttOld.Parameters.GetAt(i).%ConstructClone()
+           .   if newParam.Name="DstName" {
+	       .       s newParam.Default=NameClassSpaceNew_".cls"
+	       .       d newParam.%Save()
+	       .       zw newParam
+           .   }
+           .   d ttNew.Parameters.Insert( newParam)
+           
+           for i=1:1:ttOld.Properties.Count() d
+           .   d ttNew.Properties.Insert( ttOld.Properties.GetAt(i).%ConstructClone())
+           .   ; d ttNew.Properties.%Save()
+           
+         ;  for i=1:1:ttOld.Methods.Count() d
+         ;  .   d ttNew.Methods.Insert(ttOld.Methods.GetAt(i).%ConstructClone())
+         ;  .   ; d ttNew.Methods.%Save()
+         ;  d ttNew.%Save()
+       */
+       ;  w "Класс "_oldClassName_" скопирован с именем "_NameClassSpaceNew,!
+       q
 ]]></Implementation>
 </Method>
 </Class>
