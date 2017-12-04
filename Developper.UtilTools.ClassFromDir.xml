@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2017.1 (Build 792)" ts="2017-12-04 05:58:31">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-12-04 09:08:41">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
@@ -7,7 +7,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-ma
 
   do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64620,76206.099483</TimeChanged>
+<TimeChanged>64621,30504.314883</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -121,7 +121,7 @@ do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte("TreeJSExsamp
 <Description><![CDATA[
 
 <br>Класс предназначен для пробегаем по всем класса, в области имен, и замене исходный текст "Src" на "Dst"
-<br>do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("<link rel=""stylesheet"" type=""text/css"" href=""../demo.css""/>","<link  href='HTML.jQueryEasyUI.demo.demo.cls'  rel='stylesheet' />")]]></Description>
+<br>do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("Demo","HTML.js.WebGL.BabylonJS.babylon.cls","HTML.WebGL.BabylonJS.babylon.cls")]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>PacName="",Src="",Dst=""</FormalSpec>
 <Implementation><![CDATA[
@@ -877,7 +877,7 @@ errorCopyMeth
 <Description>
  zn "three"  do ##class(Developper.UtilTools.ClassFromDir).CopyClass("HTML.css.WebGL.x3dom.x3dom","DELETE.dom")</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>oldClassName="HTML.css.WebGL.x3dom.x3dom",NameClassSpaceNew="DELETE.dom"</FormalSpec>
+<FormalSpec>oldClassName="",NameClassSpaceNew=""</FormalSpec>
 <Implementation><![CDATA[
            q:oldClassName=""
            q:NameClassSpaceNew=""
@@ -893,6 +893,7 @@ errorCopyMeth
 	          s NameClassSpaceNew=NameClassSpaceNew_str
            }
            s ttNew.Name=NameClassSpaceNew
+           s ttNew.Description=$replace(ttNew.Description,oldClassName,NameClassSpaceNew)
            for i=1:1:ttNew.Parameters.Count() d
            .   s newParam=ttNew.Parameters.GetAt(i).%ConstructClone()
            .   if ttNew.Parameters.GetAt(i).Name="DstName" {
