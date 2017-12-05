@@ -16,7 +16,7 @@ Developper.UtilTools.ClassFromBin.xml - CSP страница
 </h4>
 <br>
    http://localhost:57773/csp/user/Developper.UtilTools.ClassFromBin.cls
-
+<br><br>
 <h3>Дополнительноые утилиты </h3>
  <br> Перенести все классы из пакета “User” в другой “MyNewPac”
  <pre>      do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("User","MyNewPac")</pre>
