@@ -17,3 +17,10 @@ Developper.UtilTools.ClassFromBin.xml - CSP страница
 <br>
    http://localhost:57773/csp/user/Developper.UtilTools.ClassFromBin.cls
 
+<h4>Дополнительноые утилиты </h4>
+ <br> Перенести все классы из пакета “User” в другой “MyNewPac”
+ <pre>      do ##class(Developper.UtilTools.ClassFromDir).RenamePacket("User","MyNewPac")</pre>
+<br> Скопировать класс "HTML.x3dom" в "DELETE.dom"
+  <pre>   do ##class(Developper.UtilTools.ClassFromDir).CopyClass("HTML.x3dom","DELETE.dom")</pre>
+<br> Заменить текст "HTML.js.WebGL.cls" на "HTML.GL.cls" в классах внутри пакета "Demo"
+  <pre>   do ##class(Developper.UtilTools.ClassFromDir).replaceTXT("Demo","HTML.js.WebGL.cls","HTML.GL.cls")</pre>
