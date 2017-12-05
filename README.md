@@ -9,7 +9,7 @@ Developper.UtilTools.ClassFromBin.xml - CSP страница
 </h4>
 <br>  do ##class(Developper.UtilTools.ClassFromDir).run("Demo.ModalWindowCSS","C:\AppServ\www\css3_modalwin\")
 <br>
-<br>
+<br>При загрузке HTML страниц в Cache` классы желательно указывать полный путь к JS и CSS библиотекам , тогда они наверняка будут изменен на путь к ресурсу, размещенному в Cache'
 <br>
 <h4>
 Загрузить бинарный файл в Cache' класс можно из вэб интерфейса Cache' (класс Developper.UtilTools.ClassFromBin)
