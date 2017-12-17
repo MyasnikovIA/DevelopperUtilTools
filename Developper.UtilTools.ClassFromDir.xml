@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1 (Build 792)" ts="2017-12-04 09:08:41">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2014.1.5 (Build 851)" ts="2017-12-17 11:42:11">
 <Class name="Developper.UtilTools.ClassFromDir">
 <Description>
 Создание классов из директории (Кодировка текстовых фалов UTF8)
@@ -7,7 +7,7 @@ do ##class(Developper.UtilTools.ClassFromDir).run("C:\AppServ\TreeJS\three.js-ma
 
   do ##class(Developper.UtilTools.ClassFromDir).replaceClassnameAfte()</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>64621,30504.314883</TimeChanged>
+<TimeChanged>64634,41988.120306</TimeChanged>
 <TimeCreated>64566,39625.768074</TimeCreated>
 
 <Method name="run">
@@ -455,7 +455,7 @@ EnyErr2
              q:file.AtEnd 
              s ind=ind+1
              ;  s html=$system.Encryption.Base64Encode(file.Read(100))
-             s html=$system.Encryption.Base64Encode(file.Read(32000))
+             s html=$system.Encryption.Base64Encode(file.Read(3000))
              ; s html=$system.Encryption.Base64Encode(file.ReadLine())
              ; d MethodDestroy.Implementation.WriteLine("   w $system.Encryption.Base64Decode("""_html_""")    ")
                s paramName="Frag"_ind
